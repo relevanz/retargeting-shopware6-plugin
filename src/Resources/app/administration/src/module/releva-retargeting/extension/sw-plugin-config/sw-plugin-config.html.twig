@@ -1,0 +1,22 @@
+{% block sw_plugin_config_actions_save %}
+    <template v-if="domain == 'RelevaRetargeting.config'">
+        <sw-button variant="primary" class="sw-plugin-config__save-action" @click.prevent="onRelevaSave">
+            {{ $tc('sw-plugin-config.buttonSave') }}
+        </sw-button>
+    </template>
+    <template v-else>
+        {% parent() %}
+    </template>
+{% endblock %}
+{% block sw_system_config %}
+    <template v-if="domain == 'RelevaRetargeting.config'">
+        <releva-system-config 
+            :domain="domain"
+            :salesChannelId="salesChannelId"
+            ref="systemConfig">
+        </releva-system-config>
+    </template>
+    <template v-else>
+        {% parent() %}
+    </template>
+{% endblock %}

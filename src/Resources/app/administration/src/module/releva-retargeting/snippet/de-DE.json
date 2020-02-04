@@ -1,0 +1,35 @@
+{
+    "releva-retargeting": {
+        "general": {
+            "mainMenuItemGeneral": "releva.nz retargeting",
+            "storefront": "Storefront-Verkaufskanal",
+            "fallback_config_relevanzapikey": "Api Key ist nur mit ausgewählten @:(releva-retargeting.general.storefront) konfigurierbar."
+        },
+        "messages": {
+            "fallback": {
+                "title": "{title}",
+                "message": "code: {code}, data: {data}"
+            },
+            "1579084006": {
+                "title": "Es wurde kein Verkaufskanal für das releva.nz Plugin konfiguriert.",
+                "message": "Noch nicht registriert? <a href=\"https://releva.nz\" target=\"blank\">Jetzt nachholen.</a> Bereits registriert? <a href=\"#/sw/plugin/settings/RelevaRetargeting\">Konfiguriere Plugin hier.</a>"
+            },
+            "1553935786": {
+                "title": "Ihr API Key für releva.nz und Verkaufskanal \"{salesChannelName}\" ist fehlerhaft.",
+                "message": "<a href=\"#/sw/plugin/settings/RelevaRetargeting\">Konfiguriere Plugin hier.</a>"
+            },
+            "1553935569": {
+                "title": "@:(releva-retargeting.messages.1553935786.title)",
+                "message": "@:(releva-retargeting.messages.1553935786.message)"
+            },
+            "1553935480": {
+                "title": "Kann keine Verbindung zum releva.nz API-Server herstellen.",
+                "message": "salesChannel: {salesChannelName}, data: {data}"
+            },
+            "1579849966": {
+                "title": "Verkaufskanal hat keine Domain.",
+                "message": "Verkaufskanal <a href=\"#/sw/sales/channel/detail/{salesChannelId}\">{salesChannelName}</a> benötigt eine Domain für den releva.nz Produktexport."
+            }
+        }
+    }
+}

@@ -1,0 +1,15 @@
+{% if shopware.config.RelevaRetargeting.config.trackingActive and  page.footer.extensions.releva.user_id %}
+    {% if page.order is defined and page.order != null %}
+        {% set productIds = [] %}
+        {% for orderItem in page.order.lineItems %}
+            {% set productIds = productIds | merge ([orderItem.getProductId]) %}
+        {% endfor %}
+        <script src="{{ page.footer.extensions.releva.conv_url }}?cid={{ page.footer.extensions.releva.user_id }}&orderId={{ page.order.getId() }}&amount={{ page.order.getAmountTotal() }}&products={{ productIds | join(',') }}"></script>
+    {% elseif page.product is defined and page.product != null %}
+        <script src="{{ page.footer.extensions.releva.tracker_url }}?t=d&action=p&cid={{ page.footer.extensions.releva.user_id }}&id={{ page.product.getId() }}" async="async"></script>
+    {% elseif page.cmsPage is defined and page.cmsPage != null and page.cmsPage.type == 'product_list' %}
+        <script src="{{ page.footer.extensions.releva.tracker_url }}?t=d&action=c&cid={{ page.footer.extensions.releva.user_id }}&id={{ page.cmsPage.getId() }}" async="async"></script>
+    {% else %}
+        <script src="{{ page.footer.extensions.releva.tracker_url }}?t=d&action=s&cid={{ page.footer.extensions.releva.user_id }}" async="async"></script>
+    {% endif %}
+{% endif %}

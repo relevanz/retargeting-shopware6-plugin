@@ -1,0 +1,31 @@
+{
+    "name": "releva/relevanz-shopware-plugin",
+    "description": "releva.nz - Technology for personalized marketing",
+    "version": "v1.0.0",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "releva GmbH"
+        }
+    ],
+    "require": {
+        "shopware/core": "*",
+        "shopware/administration": "*",
+        "shopware/storefront": "*",
+        "releva/retargeting-base": "*"
+    },
+    "type": "shopware-platform-plugin",
+    "autoload": {
+        "psr-4": {
+            "Releva\\Retargeting\\Shopware\\": "src/"
+        }
+    },
+    "extra": {
+        "shopware-plugin-class": "Releva\\Retargeting\\Shopware\\RelevaRetargeting",
+        "copyright": "(c) by releva GmbH",
+        "label": {
+            "de-DE": "releva.nz - Technology for personalized marketing",
+            "en-GB": "releva.nz - Technology for personalized marketing"
+        }
+    }
+}

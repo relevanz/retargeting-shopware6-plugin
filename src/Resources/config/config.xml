@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
+    <card>
+        <title>releva.nz Settings</title>
+        <title lang="de-DE">releva.nz Einstellungen</title>
+        <input-field>
+            <name>relevanzApiKey</name>
+            <label>Api Key</label>
+            <label lang="de-DE">Api Schlüssel</label>
+        </input-field>
+        <input-field>
+            <name>relevanzUserId</name>
+            <label>User-ID</label>
+            <label lang="de-DE">Benutzer ID</label>
+            <disabled>true</disabled>
+        </input-field>
+    </card>
+    <card>
+        <title>releva.nz Tracking</title>
+        <input-field type="bool">
+            <name>trackingActive</name>
+            <label>Activate Tracking</label>
+            <label lang="de-DE">Tracking aktivieren</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+    </card>
+</config>

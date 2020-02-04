@@ -1,0 +1,28 @@
+{% block releva_retargeting_statistic %}
+    <sw-page class="releva-retargeting-statistic">
+        <template slot="smart-bar-actions">
+            {% block releva_retargeting_statistic_actions %}
+                <sw-single-select
+                    v-if="salesChannelsToIframeUrl && salesChannelsToIframeUrl.length > 1"
+                    style="min-width: 250px;text-align: left; margin: 0;"
+                    size="big" 
+                    labelProperty="salesChannel"
+                    valueProperty="iframeUrl"
+                    @input="onSalesChannelsToIframeUrlSelectionChange"
+                    :value="currentIframeUrl"
+                    :options="salesChannelsToIframeUrl"
+                    :placeholder="$tc('releva-retargeting.general.storefront')"
+                ></sw-single-select>
+            {% endblock %}
+        </template>
+        <template slot="content">
+            {% block releva_retargeting_statistic_content %}
+                <div v-if='currentIframeUrl' style="position: relative; height: 100%;">
+                    <template>
+                        <iframe v-bind:src="currentIframeUrl" style="position:absolute; left:0; right:0; top: 0 ; bottom: 0; width: 100%; height: 100%; border: none;"></iframe>
+                    </template>
+                </div>
+            {% endblock %}
+        </template>
+    </sw-page>
+{% endblock %}
