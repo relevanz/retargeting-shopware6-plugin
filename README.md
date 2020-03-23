@@ -19,6 +19,8 @@ In order to install the module via composer run one of the following commands in
 * **composer require relevanz/retargeting-shopware-plugin** to install the released version compatible with OXID eShop Compilation 6.*
 * **composer require relevanz/retargeting-shopware-plugin:dev-master** to install the latest unreleased version from github
 
+## Alternative Installation
+
 Alternative you can install with uploading 'RelevanzTrackingShopware.zip' in Shopware-6-Backend.  
 Just go to Shopware-6-Backend: Settings => System => Plugins and upload RelevanzTrackingShopware.zip from root-folder of releva.nz plugin.
 
