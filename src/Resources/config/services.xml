@@ -10,5 +10,10 @@
         <service id="Releva\Retargeting\Shopware\Internal\ShopInfo" public="true">
             <argument type="service" id="service_container"/>
         </service>
+        <service id="Releva\Retargeting\Shopware\Framework\Cookie\CustomCookieProvider" decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
+             <argument type="service" id="Releva\Retargeting\Shopware\Framework\Cookie\CustomCookieProvider.inner" />
+             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+             <argument type="service" id="request_stack" />
+         </service>
     </services>
 </container>

@@ -9,10 +9,7 @@
         }
     ],
     "require": {
-        "shopware/core": "*",
-        "shopware/administration": "*",
-        "shopware/storefront": "*",
-        "releva/retargeting-base": "*"
+        "relevanz/retargeting-base-lib": "*"
     },
     "type": "shopware-platform-plugin",
     "autoload": {
@@ -23,6 +20,7 @@
     "extra": {
         "shopware-plugin-class": "Releva\\Retargeting\\Shopware\\RelevaRetargeting",
         "copyright": "(c) by releva GmbH",
+        "plugin-icon": "src/Resources/public/administration/static/img/favicon/modules/icon-module-releva-retargeting.png",
         "label": {
             "de-DE": "releva.nz - Technology for personalized marketing",
             "en-GB": "releva.nz - Technology for personalized marketing"
