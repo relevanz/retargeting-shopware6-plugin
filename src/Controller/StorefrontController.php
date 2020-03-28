@@ -13,6 +13,8 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Content\Product\Cart\ProductLineItemFactory;
 use Shopware\Core\Content\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
+use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -43,7 +45,7 @@ class StorefrontController extends ShopwareStorefrontController {
      * @var [(string) sales-channel-id => EntitySearchResult, ]
      */
     private $salesChannelProducts = [];
-
+    
     /**
      * @Route("/releva/retargeting/callback", name="frontend.releva.retargeting.callback", options={"seo"="false"}, methods={"GET"})
      */
@@ -150,6 +152,9 @@ class StorefrontController extends ShopwareStorefrontController {
         $salesChannelEntity = $salesChannelContext->getSalesChannel();
         /* @var $systemConfigService SystemConfigService */
         $systemConfigService = $this->get(SystemConfigService::class);
+        if (!$systemConfigService->get('RelevaRetargeting.config.trackingActive', $salesChannelEntity->getId())) {
+            return false;
+        }
         $credentials = new Credentials(
             $systemConfigService->get('RelevaRetargeting.config.relevanzApiKey', $salesChannelEntity->getId()),
             $systemConfigService->get('RelevaRetargeting.config.relevanzUserId', $salesChannelEntity->getId())
@@ -178,12 +183,12 @@ class StorefrontController extends ShopwareStorefrontController {
         $salesChannel = $salesChannelContext->getSalesChannel();
         if (!array_key_exists($salesChannel->getId(), $this->salesChannelProducts)) {
             /* @var $productRepository EntityRepository */
-            $productRepository = $this->get('product.repository');;
+            $productRepository = $this->get('product.repository');
             RepositoryHelper::setAutoload($productRepository, ['categories', 'translations', ]);
             $criteria = (new Criteria())
                 ->setLimit($page === null ? null : self::ITEMS_PER_PAGE)
                 ->setOffset($page === null ? null : $page * self::ITEMS_PER_PAGE)
-                ->addFilter(new EqualsAnyFilter('categoryTree', $this->getSalesChannelCategoryIds($salesChannelContext)))
+                ->addFilter(new ProductAvailableFilter($salesChannelContext->getSalesChannel()->getId(), ProductVisibilityDefinition::VISIBILITY_SEARCH))
             ;
             $this->salesChannelProducts[$salesChannel->getId()] = $productRepository->search($criteria, $salesChannelContext->getContext());
         }
