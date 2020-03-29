@@ -167,7 +167,7 @@ class ApiController extends AbstractController
         return $domain;
     }
     
-    private function getSalesChannels (Context $context, $filters = []): EntitySearchResult {
+    private function getSalesChannels (Context $context, array $filters = []): EntitySearchResult {
         $salesChannelsRepository = $this->container->get('sales_channel.repository');
         RepositoryHelper::setAutoload($salesChannelsRepository, ['domains']);
         $criteria = new Criteria();

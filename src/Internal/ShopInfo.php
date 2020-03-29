@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 namespace Releva\Retargeting\Shopware\Internal;
+
 use Releva\Retargeting\Base\AbstractShopInfo;
 use Psr\Container\ContainerInterface;
 use PackageVersions\Versions;
@@ -29,11 +30,26 @@ class ShopInfo extends AbstractShopInfo {
         return $shopwareVersion;
     }
     public static function getPluginVersion(): string {
-        return Versions::getVersion('releva/relevanz-shopware-plugin');
+        $pluginFolder = dirname(self::$container->getParameterBag()->get('kernel.bundles_metadata')['RelevaRetargeting']['path']).'/';
+        if (file_exists($pluginFolder.'vendor') && is_dir($pluginFolder.'vendor')) {// plugin have own vendor folder => its installed via admin upload
+            $version = null;
+            $composerFile = $pluginFolder.'composer.json';
+            if (file_exists($composerFile)) {
+                $composerJson = json_decode(file_get_contents($composerFile), true);
+                $version = array_key_exists('version', $composerJson) ? $composerJson['version'] : null;
+            }
+            return $version === null ? 'unknown' : $version;
+        } else {
+            return Versions::getVersion('relevanz/retargeting-shopware-plugin');
+        }
     }
     
     public static function getDbVersion(): array {;
-        $versionData = self::$container === null ? [] : self::$container->get(Connection::class)->query('SELECT @@version AS `version`, @@version_comment AS `server`;')->fetch();
+        $versionData =
+            self::$container === null
+            ? []
+            : self::$container->get(Connection::class)->query('SELECT @@version AS `version`, @@version_comment AS `server`;')->fetch()
+        ;
         return empty($versionData) ? parent::getDbVersion() : $versionData;
     }
     
@@ -45,14 +61,20 @@ class ShopInfo extends AbstractShopInfo {
         ];
     }
     
-    public static function getUrlCallback() {
-        return self::$container === null ? null : self::$container->get('router')->getRouteCollection()->get('frontend.releva.retargeting.callback')->getPath().'?auth=:auth';
+    public static function getUrlCallback():? string {
+        return 
+            self::$container === null
+            ? null
+            : self::$container->get('router')->getRouteCollection()->get('frontend.releva.retargeting.callback')->getPath().'?auth=:auth'
+        ;
     }
-
-    /**
-     * @return string
-     */
-    public static function getUrlProductExport() {
-        return self::$container === null ? null : self::$container->get('router')->getRouteCollection()->get('frontend.releva.retargeting.products')->getPath().'?auth=:auth';
+    
+    public static function getUrlProductExport():? string {
+        return
+            self::$container === null
+            ? null
+            : self::$container->get('router')->getRouteCollection()->get('frontend.releva.retargeting.products')->getPath().'?auth=:auth'
+        ;
     }
+    
 }

@@ -9,7 +9,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 use Releva\Retargeting\Base\RelevanzApi;
 
-class StoreFrontSubscriber implements EventSubscriberInterface{
+class StoreFrontSubscriber implements EventSubscriberInterface {
     
     private $systemConfigService;
     

@@ -15,5 +15,11 @@
              <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
              <argument type="service" id="request_stack" />
          </service>
+        <service id="Releva\Retargeting\Shopware\Storefront\Resources\snippet\de_DE\SnippetFile_de_DE" public="true">
+            <tag name="shopware.snippet.file" priority="100"/>
+        </service>
+        <service id="Releva\Retargeting\Shopware\Storefront\Resources\snippet\en_GB\SnippetFile_en_GB" public="true">
+            <tag name="shopware.snippet.file" priority="100"/>
+        </service>
     </services>
 </container>

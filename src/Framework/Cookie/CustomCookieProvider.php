@@ -30,10 +30,11 @@ class CustomCookieProvider implements CookieProviderInterface {
                 ? [
                     [
                         'snippet_name' => 'cookie.groupMarketing',
-                        'snippet_description' => 'cookie.groupMarketingDescription ',
+                        'snippet_description' => 'cookie.groupMarketingDescription',
                         'entries' => [
                             [
                                 'snippet_name' => 'cookie.relevanzRetargeting',
+                                'snippet_description' => 'cookie.relevanzRetargetingDescription',
                                 'cookie' => 'relevanzRetargeting',
                                 'value'=> 'allow',
                                 'expiration' => '30'

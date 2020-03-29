@@ -6,7 +6,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 
 class RepositoryHelper {
     
-    public static function setAutoload (EntityRepository $repository, $propertyNames = []): void {
+    /**
+     * manipulates given EntityRepository to allow autoload of related repositories during query
+     * 
+     * @param EntityRepository $repository
+     * @param array $propertyNames
+     * @return void
+     */
+    public static function setAutoload (EntityRepository $repository, array $propertyNames = []): void {
         $definitionFields = $repository->getDefinition()->getFields()->getElements();
         foreach ($propertyNames as $propertyName) {
             if (array_key_exists($propertyName, $definitionFields)) {
