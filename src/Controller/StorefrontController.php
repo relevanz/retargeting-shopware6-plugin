@@ -2,37 +2,32 @@
 
 namespace Releva\Retargeting\Shopware\Controller;
 
-use Releva\Retargeting\Base\Export\Item\ProductExportItem;
-use Releva\Retargeting\Base\Export\ProductJsonExporter;
-use Releva\Retargeting\Base\Export\ProductCsvExporter;
-use Releva\Retargeting\Shopware\Internal\ShopInfo;
 use Releva\Retargeting\Base\Credentials;
+use Releva\Retargeting\Base\Export\Item\ProductExportItem;
+use Releva\Retargeting\Base\Export\ProductCsvExporter;
+use Releva\Retargeting\Base\Export\ProductJsonExporter;
 use Releva\Retargeting\Shopware\Internal\RepositoryHelper;
+use Releva\Retargeting\Shopware\Internal\ShopInfo;
 
-use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Content\Product\Cart\ProductLineItemFactory;
 use Shopware\Core\Content\ProductEntity;
-use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
-use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope; // need for anotations
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope; // need for anotations
 use Shopware\Storefront\Controller\StorefrontController as ShopwareStorefrontController;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @RouteScope(scopes={"storefront"})
  */
-class StorefrontController extends ShopwareStorefrontController {
+class StorefrontController extends ShopwareStorefrontController
+{
     
     private const ITEMS_PER_PAGE = 50;
     
@@ -42,51 +37,28 @@ class StorefrontController extends ShopwareStorefrontController {
     private $salesChannelCategories = [];
     
     /**
-     * @var [(string) sales-channel-id => EntitySearchResult, ]
-     */
-    private $salesChannelProducts = [];
-    
-    /**
      * @Route("/releva/retargeting/callback", name="frontend.releva.retargeting.callback", options={"seo"="false"}, methods={"GET"})
      */
     public function callbackAction(Request $request, SalesChannelContext $salesChannelContext): JsonResponse
     {
-        if (!$this->checkCredentials($request, $salesChannelContext)) {
-            http_response_code(401);
-            die;
-        }
+        $this->checkCredentials($request, $salesChannelContext);
         /* @var $shopInfo ShopInfo */
         $shopInfo = $this->get(ShopInfo::class);
-        $callbackData = [
+        return new JsonResponse([
             'plugin-version' => $shopInfo->getPluginVersion(),
-            'shop' => [
-                'system' => $shopInfo->getShopSystem(),
-                'version' => $shopInfo->getShopVersion(),
-            ],
+            'shop' => ['system' => $shopInfo->getShopSystem(), 'version' => $shopInfo->getShopVersion(), ],
             'environment' => $shopInfo->getServerEnvironment(),
             'callbacks' => [
-                'callback' => [
-                    'url' => $request->getSchemeAndHttpHost().$shopInfo->getUrlCallback(),
-                    'parameters' => [],
-                ],
+                'callback' => ['url' => $request->getSchemeAndHttpHost().$shopInfo->getUrlCallback(), 'parameters' => [], ],
                 'export' => [
                     'url' => $request->getSchemeAndHttpHost().$shopInfo->getUrlProductExport(),
                     'parameters' => [
-                        'format' => [
-                            'values' => ['csv', 'json'],
-                            'default' => 'csv',
-                            'optional' => true,
-                        ],
-                        'page' => [
-                            'type' => 'integer',
-                            'optional' => true,
-                            'info' => ['items-per-page' => self::ITEMS_PER_PAGE, ],
-                        ],
+                        'format' => ['values' => ['csv', 'json'], 'default' => 'csv', 'optional' => true, ],
+                        'page' => ['type' => 'integer', 'optional' => true, 'info' => ['items-per-page' => self::ITEMS_PER_PAGE, ], ],
                     ],
                 ],
             ]
-        ];
-        return new JsonResponse($callbackData);
+        ]);
     }
     
     /**
@@ -94,11 +66,15 @@ class StorefrontController extends ShopwareStorefrontController {
      */
     public function productsAction(Request $request, SalesChannelContext $salesChannelContext) : void
     {
-        if (!$this->checkCredentials($request, $salesChannelContext)) {
-            http_response_code(401);
-            die;
-        }
-        $productsSearchResult = $this->getSalesChannelProducts($salesChannelContext, (int) $request->get('page') < 1 ? null : (int) $request->get('page') - 1);
+        $this->checkCredentials($request, $salesChannelContext);
+        $page = (int) $request->get('page') < 1 ? null : (int) $request->get('page') - 1;
+        $productsSearchResult = $this->get(RepositoryHelper::class)->getProducts(
+            $salesChannelContext->getContext(),
+            ['categories', 'translations', ],
+            [RepositoryHelper::FILTER_PRODUCT_AVAILABLE, ],
+            $page === null ? null : self::ITEMS_PER_PAGE,
+            $page === null ? null : $page * self::ITEMS_PER_PAGE
+        );
         if ($productsSearchResult->getTotal() === 0) {
             http_response_code(404);
             die;
@@ -148,18 +124,21 @@ class StorefrontController extends ShopwareStorefrontController {
         die;
     }
     
-    private function checkCredentials (Request $request, SalesChannelContext $salesChannelContext): bool {
+    private function checkCredentials (Request $request, SalesChannelContext $salesChannelContext): self {
         $salesChannelEntity = $salesChannelContext->getSalesChannel();
         /* @var $systemConfigService SystemConfigService */
         $systemConfigService = $this->get(SystemConfigService::class);
-        if (!$systemConfigService->get('RelevaRetargeting.config.trackingActive', $salesChannelEntity->getId())) {
-            return false;
+        if ($systemConfigService->get('RelevaRetargeting.config.trackingActive', $salesChannelEntity->getId())) {
+            $credentials = new Credentials(
+                $systemConfigService->get('RelevaRetargeting.config.relevanzApiKey', $salesChannelEntity->getId()),
+                $systemConfigService->get('RelevaRetargeting.config.relevanzUserId', $salesChannelEntity->getId())
+            );
+            if ($credentials->isComplete() && $credentials->getAuthHash() === $request->get('auth')) {
+                return $this;
+            }
         }
-        $credentials = new Credentials(
-            $systemConfigService->get('RelevaRetargeting.config.relevanzApiKey', $salesChannelEntity->getId()),
-            $systemConfigService->get('RelevaRetargeting.config.relevanzUserId', $salesChannelEntity->getId())
-        );
-        return $credentials->isComplete() && $credentials->getAuthHash() === $request->get('auth');
+        http_response_code(401);
+        die;
     }
     
     private function getSalesChannelCategoryIds (SalesChannelContext $salesChannelContext): array {
@@ -179,19 +158,4 @@ class StorefrontController extends ShopwareStorefrontController {
         return $this->salesChannelCategories[$salesChannel->getId()];
     }
     
-    private function getSalesChannelProducts (SalesChannelContext $salesChannelContext, int $page = null): EntitySearchResult {
-        $salesChannel = $salesChannelContext->getSalesChannel();
-        if (!array_key_exists($salesChannel->getId(), $this->salesChannelProducts)) {
-            /* @var $productRepository EntityRepository */
-            $productRepository = $this->get('product.repository');
-            RepositoryHelper::setAutoload($productRepository, ['categories', 'translations', ]);
-            $criteria = (new Criteria())
-                ->setLimit($page === null ? null : self::ITEMS_PER_PAGE)
-                ->setOffset($page === null ? null : $page * self::ITEMS_PER_PAGE)
-                ->addFilter(new ProductAvailableFilter($salesChannelContext->getSalesChannel()->getId(), ProductVisibilityDefinition::VISIBILITY_SEARCH))
-            ;
-            $this->salesChannelProducts[$salesChannel->getId()] = $productRepository->search($criteria, $salesChannelContext->getContext());
-        }
-        return $this->salesChannelProducts[$salesChannel->getId()];
-    }
 }

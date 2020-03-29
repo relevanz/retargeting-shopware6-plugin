@@ -8,26 +8,24 @@ use Releva\Retargeting\Shopware\Internal\ShopInfo;
 use Releva\Retargeting\Shopware\Internal\RepositoryHelper;
 
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope; // need for annotations
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope; // need for annotations
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @RouteScope(scopes={"api"})
  */
 class ApiController extends AbstractController
 {
+    
     /**
      * @Route("/api/v{version}/releva/retargeting/getInvolvedSalesChannelsToIframeUrls", name="api.action.releva.retargeting.getinvolvedsaleschannelstoiframeurls", methods={"POST"})
      */
@@ -36,9 +34,7 @@ class ApiController extends AbstractController
         /* @var $systemConfigService SystemConfigService */
         $systemConfigService = $this->get(SystemConfigService::class);
         /* @var $salesChannelsRepository EntityRepository */
-        $allSalesChannels = $this->getSalesChannels($context, [
-            new EqualsFilter('typeId', Defaults::SALES_CHANNEL_TYPE_STOREFRONT),
-        ]);
+        $allSalesChannels = $this->get(RepositoryHelper::class)->getSalesChannels($context, ['domains', ], [RepositoryHelper::FILTER_SALESCHANNEL_STOREFRONT, ]);
         $salesChannels = $errors = [];
         foreach ($allSalesChannels as $salesChannelEntity) {
             /* @var $salesChannelEntity SalesChannelEntity */
@@ -95,15 +91,13 @@ class ApiController extends AbstractController
      */
     public function getVerifyApiKeyAction(Request $request, Context $context): JsonResponse
     {
-        $salesChannels = $this->getSalesChannels($context, [
-            new EqualsFilter('id', $request->get('config')['salesChannel'])
-        ]);
+        $salesChannels = $this->get(RepositoryHelper::class)->getSalesChannels($context, ['domains', ], [RepositoryHelper::FILTER_SALESCHANNEL_STOREFRONT, ]);
         /* @var $salesChannelEntity SalesChannelEntity */
         $salesChannelEntity = $salesChannels->first();
         $data = ['userId' => null, ];
         $errors = [];
         try {
-            $this->verifyApiKey($request->get('config')['apiKey'], $salesChannelEntity);
+            $data['userId'] = $this->verifyApiKey($request->get('config')['apiKey'], $salesChannelEntity);
         } catch (RelevanzException $exception) {
             $errors[] = [
                 'message' => vsprintf($exception->getMessage(), $exception->getSprintfArgs()),
@@ -165,16 +159,6 @@ class ApiController extends AbstractController
             throw new RelevanzException('Storefront doesn\'t have domain.', 1579849966);
         }
         return $domain;
-    }
-    
-    private function getSalesChannels (Context $context, array $filters = []): EntitySearchResult {
-        $salesChannelsRepository = $this->container->get('sales_channel.repository');
-        RepositoryHelper::setAutoload($salesChannelsRepository, ['domains']);
-        $criteria = new Criteria();
-        foreach ($filters as $filter) {
-            $criteria->addFilter($filter);
-        }
-        return $salesChannelsRepository->search($criteria, $context);
     }
     
 }
