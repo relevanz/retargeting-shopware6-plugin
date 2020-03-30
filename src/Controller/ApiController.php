@@ -121,7 +121,8 @@ class ApiController extends AbstractController
         ]);
     }
     
-    private function verifyApiKey (string $apiKey, SalesChannelEntity $salesChannelEntity): int {
+    private function verifyApiKey (string $apiKey, SalesChannelEntity $salesChannelEntity): int
+    {
         /* @var $systemConfigService SystemConfigService */
         $systemConfigService = $this->get(SystemConfigService::class);
         try {
@@ -140,7 +141,8 @@ class ApiController extends AbstractController
         }
     }
     
-    private function getDomainForSalesChannel(SalesChannelEntity $salesChannelEntity): SalesChannelDomainEntity {
+    private function getDomainForSalesChannel(SalesChannelEntity $salesChannelEntity): SalesChannelDomainEntity
+    {
         $domain = null;
         foreach ($salesChannelEntity->getDomains() as $domainEntity) {
             if (

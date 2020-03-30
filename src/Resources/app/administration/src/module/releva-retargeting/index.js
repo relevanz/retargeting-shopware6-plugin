@@ -13,7 +13,7 @@ Module.register('releva-retargeting', {
     name: 'relevanz-retargeting',
     title: 'releva-retargeting.general.mainMenuItemGeneral',
 
-    favicon: '../../../../../relevaretargeting/administration/static/img/favicon/modules/icon-module-releva-retargeting.png',// shopware prefix static/img/favicon/modules
+    favicon: '../../../../../relevaretargeting/administration/static/img/favicon/modules/icon-module-releva-retargeting.png',
     
     snippets: {
         'de-DE': deDE,

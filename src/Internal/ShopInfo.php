@@ -8,19 +8,23 @@ use PackageVersions\Versions;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpFoundation\Request;
 
-class ShopInfo extends AbstractShopInfo {
+class ShopInfo extends AbstractShopInfo
+{
     
     private static $container;
     
-    public function __construct(ContainerInterface $container) {
+    public function __construct(ContainerInterface $container)
+    {
         self::$container = $container;
     }
 
-    public static function getShopSystem(): string {
+    public static function getShopSystem(): string
+    {
         return 'Shopware';
     }
     
-    public static function getShopVersion(): string {
+    public static function getShopVersion(): string
+    {
         $versions = Versions::VERSIONS;
         if (isset($versions['shopware/core'])) {
             $shopwareVersion = Versions::getVersion('shopware/core');
@@ -29,7 +33,9 @@ class ShopInfo extends AbstractShopInfo {
         }
         return $shopwareVersion;
     }
-    public static function getPluginVersion(): string {
+    
+    public static function getPluginVersion(): string
+    {
         $pluginFolder = dirname(self::$container->getParameterBag()->get('kernel.bundles_metadata')['RelevaRetargeting']['path']).'/';
         if (file_exists($pluginFolder.'vendor') && is_dir($pluginFolder.'vendor')) {// plugin have own vendor folder => its installed via admin upload
             $version = null;
@@ -44,7 +50,8 @@ class ShopInfo extends AbstractShopInfo {
         }
     }
     
-    public static function getDbVersion(): array {;
+    public static function getDbVersion(): array
+    {
         $versionData =
             self::$container === null
             ? []
@@ -53,7 +60,8 @@ class ShopInfo extends AbstractShopInfo {
         return empty($versionData) ? parent::getDbVersion() : $versionData;
     }
     
-    public static function getServerEnvironment(): array {
+    public static function getServerEnvironment(): array
+    {
         return [
             'server-software' => Request::createFromGlobals()->server->get('SERVER_SOFTWARE'),
             'php' => static::getPhpVersion(),
@@ -61,7 +69,8 @@ class ShopInfo extends AbstractShopInfo {
         ];
     }
     
-    public static function getUrlCallback():? string {
+    public static function getUrlCallback():? string
+    {
         return 
             self::$container === null
             ? null
@@ -69,7 +78,8 @@ class ShopInfo extends AbstractShopInfo {
         ;
     }
     
-    public static function getUrlProductExport():? string {
+    public static function getUrlProductExport():? string
+    {
         return
             self::$container === null
             ? null

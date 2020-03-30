@@ -6,7 +6,8 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class CustomCookieProvider implements CookieProviderInterface {
+class CustomCookieProvider implements CookieProviderInterface
+{
 
     private $originalCookieProvider;
     
