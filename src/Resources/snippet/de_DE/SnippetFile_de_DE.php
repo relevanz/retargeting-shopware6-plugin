@@ -23,7 +23,7 @@ class SnippetFile_de_DE implements SnippetFileInterface
 
     public function getAuthor(): string
     {
-        return 'Relevanz';
+        return 'releva GmbH';
     }
 
     public function isBase(): bool
