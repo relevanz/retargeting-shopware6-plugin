@@ -10,6 +10,7 @@ use Releva\Retargeting\Shopware\Internal\RepositoryHelper;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope; // need for annotations
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
@@ -91,9 +92,11 @@ class ApiController extends AbstractController
      */
     public function getVerifyApiKeyAction(Request $request, Context $context): JsonResponse
     {
-        $salesChannels = $this->get(RepositoryHelper::class)->getSalesChannels($context, ['domains', ], [RepositoryHelper::FILTER_SALESCHANNEL_STOREFRONT, ]);
         /* @var $salesChannelEntity SalesChannelEntity */
-        $salesChannelEntity = $salesChannels->first();
+        $salesChannelEntity = $this->get(RepositoryHelper::class)->getSalesChannels($context, ['domains', ], [
+            RepositoryHelper::FILTER_SALESCHANNEL_STOREFRONT, 
+            new EqualsFilter('id', $request->get('config')['salesChannel']),
+        ])->first();
         $data = ['userId' => null, ];
         $errors = [];
         try {
@@ -131,7 +134,7 @@ class ApiController extends AbstractController
                     '%s%s',
                     $this->getDomainForSalesChannel($salesChannelEntity)->getUrl(),// throw Exception, no domain configured
                     $this->get(ShopInfo::class)->getUrlCallback()
-            ),
+                ),
             ])->getUserId();
             $systemConfigService->set('RelevaRetargeting.config.relevanzUserId', $userId, $salesChannelEntity->getId());
             return $userId;
@@ -149,7 +152,7 @@ class ApiController extends AbstractController
                 $domain === null // use any domain
                 || in_array($domainEntity->getLanguageId(), [
                     $salesChannelEntity->getLanguageId(), // configured domain
-                    Defaults::SALES_CHANNEL, // default domain
+                    Defaults::SALES_CHANNEL, // system default domain
                 ])) {
                 $domain = $domainEntity;
             }
