@@ -17,23 +17,16 @@ Component.extend('releva-system-config', 'sw-system-config', {
         }
     },
     methods: {
-        handleResponseErrors (errors) {
-            for (var i in errors) {
-                var translatedMessage =
-                    typeof this.$t("releva-retargeting.messages." + errors[i].code) === "string"
-                    ? {// no message defined use fallback
-                        title: this.$t("releva-retargeting.messages.fallback.title", {title: errors[i].message}),
-                        message: this.$t("releva-retargeting.messages.fallback.message", {code: errors[i].code, data: JSON.stringify(errors[i].data)})
-                    }
-                    : {
-                        title: this.$t("releva-retargeting.messages." + errors[i].code + ".title", errors[i].data),
-                        message: this.$t("releva-retargeting.messages." + errors[i].code + ".message", errors[i].data)
-                    }
-                ;
-                this.createNotificationError({
-                    title: translatedMessage.title,
-                    message: translatedMessage.message
-                });
+        handleResponseNotifications (notifications) {
+            for (var i in notifications) {
+                if (typeof this.$t("releva-retargeting.messages." + notifications[i].code) === "string") {
+                    notifications[i].title = this.$t("releva-retargeting.messages.fallback.title", {title: notifications[i].message});
+                    notifications[i].message = this.$t("releva-retargeting.messages.fallback.message", {code: notifications[i].code, data: JSON.stringify(notifications[i].data)});
+                } else {
+                    notifications[i].title = this.$t("releva-retargeting.messages." + notifications[i].code + ".title", notifications[i].data);
+                    notifications[i].message = this.$t("releva-retargeting.messages." + notifications[i].code + ".message", notifications[i].data);
+                }
+                this.createNotification(notifications[i]);
             }
         },
         saveReleva () {
@@ -53,7 +46,7 @@ Component.extend('releva-system-config', 'sw-system-config', {
                             }
                             this.readAll();
                         }
-                        this.handleResponseErrors(response.errors);
+                        this.handleResponseNotifications(response.notifications);
                         this.isLoading = false;
                     }
                 );

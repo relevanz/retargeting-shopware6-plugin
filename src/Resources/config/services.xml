@@ -3,9 +3,13 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Releva\Retargeting\Shopware\Subscriber\StoreFrontSubscriber">
-            <tag name="kernel.event_subscriber"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        <service id="releva_retargeting.logger" class="Monolog\Logger">
+            <factory service="Shopware\Core\Framework\Log\LoggerFactory" method="createRotating"/>
+            <argument type="string">releva_retargeting</argument>
+        </service>
+        <service id="Releva\Retargeting\Shopware\Internal\LoggerBridge" public="true">
+            <argument type="service" id="service_container"/>
+            <argument type="service" id="releva_retargeting.logger"/>
         </service>
         <service id="Releva\Retargeting\Shopware\Internal\ShopInfo" public="true">
             <argument type="service" id="service_container"/>
@@ -26,6 +30,10 @@
         </service>
         <service id="Releva\Retargeting\Shopware\Storefront\Resources\snippet\en_GB\SnippetFile_en_GB" public="true">
             <tag name="shopware.snippet.file" priority="100"/>
+        </service>
+        <service id="Releva\Retargeting\Shopware\Subscriber\StoreFrontSubscriber">
+            <tag name="kernel.event_subscriber"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
     </services>
 </container>

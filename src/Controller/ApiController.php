@@ -36,7 +36,7 @@ class ApiController extends AbstractController
         $systemConfigService = $this->get(SystemConfigService::class);
         /* @var $salesChannelsRepository EntityRepository */
         $allSalesChannels = $this->get(RepositoryHelper::class)->getSalesChannels($context, ['domains', ], [RepositoryHelper::FILTER_SALESCHANNEL_STOREFRONT, ]);
-        $salesChannels = $errors = [];
+        $salesChannels = $notifications = [];
         foreach ($allSalesChannels as $salesChannelEntity) {
             /* @var $salesChannelEntity SalesChannelEntity */
             $apiKey = $systemConfigService->get('RelevaRetargeting.config.relevanzApiKey', $salesChannelEntity->getId());
@@ -51,38 +51,20 @@ class ApiController extends AbstractController
                         'salesChannel' => $salesChannelEntity->getName(),
                         'iframeUrl' => sprintf(RelevanzApi::RELEVANZ_STATS_FRAME.'%s', $apiKey),
                     ];
-                } catch (RelevanzException $exception) {
-                    $errors[] = [
-                        'message' => vsprintf($exception->getMessage(), $exception->getSprintfArgs()),
-                        'code' => $exception->getCode(),
-                        "data" => [
-                            'salesChannelName' => $salesChannelEntity->getName(),
-                            'salesChannelId' => $salesChannelEntity->getId(),
-                            'data' => $exception->getSprintfArgs(),
-                        ],
-                    ];
                 } catch (\Exception $exception) {
-                    $errors[] = [
-                        'message' => $exception->getMessage(),
-                        'code' => $exception->getCode(),
-                        "data" => [],
-                    ];
+                    $this->get('Releva\Retargeting\Shopware\Internal\LoggerBridge')->addException($exception, $salesChannelEntity, $notifications);
                 }
             }
         }
-        if (count($salesChannels) === 0 && count($errors) === 0) {
-            $errors[] = [
-                "message" => "No sales-channels are configured for releva.nz plugin.",
-                "code" => 1579084006,
-                "data" => [],
-            ];
+        if (count($salesChannels) === 0 && count($notifications) === 0) {
+            $this->get('Releva\Retargeting\Shopware\Internal\LoggerBridge')->add('No sales-channels are configured for releva.nz plugin.', 1579084006, [], $notifications);
             $salesChannels[] = [
                 'salesChannel' => 'releva.nz Homepage',
                 'iframeUrl' => 'https://releva.nz/',
             ];
         }
         return new JsonResponse([
-            'errors' => $errors,
+            'notifications' => $notifications,
             'data' => $salesChannels,
         ]);
     }
@@ -98,28 +80,14 @@ class ApiController extends AbstractController
             new EqualsFilter('id', $request->get('config')['salesChannel']),
         ])->first();
         $data = ['userId' => null, ];
-        $errors = [];
+        $notifications = [];
         try {
             $data['userId'] = $this->verifyApiKey($request->get('config')['apiKey'], $salesChannelEntity);
-        } catch (RelevanzException $exception) {
-            $errors[] = [
-                'message' => vsprintf($exception->getMessage(), $exception->getSprintfArgs()),
-                'code' => $exception->getCode(),
-                "data" => [
-                    'salesChannelName' => $salesChannelEntity->getName(),
-                    'salesChannelId' => $salesChannelEntity->getId(),
-                    'data' => $exception->getSprintfArgs(),
-                ],
-            ];
         } catch (\Exception $exception) {
-            $errors[] = [
-                'message' => $exception->getMessage(),
-                'code' => $exception->getCode(),
-                "data" => [],
-            ];
+            $this->get('Releva\Retargeting\Shopware\Internal\LoggerBridge')->addException($exception, $salesChannelEntity, $notifications);
         }
         return new JsonResponse([
-            'errors' => $errors,
+            'notifications' => $notifications,
             'data' => $data,
         ]);
     }

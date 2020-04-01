@@ -85,7 +85,22 @@ class StorefrontController extends ShopwareStorefrontController
             );
             if ($credentials->isComplete() && $credentials->getAuthHash() === $request->get('auth')) {
                 return $this;
+            } else {
+                $this->get('Releva\Retargeting\Shopware\Internal\LoggerBridge')->add('Auth is not correct', 1585739840, [
+                    'salesChannelName' => $salesChannelEntity->getName(),
+                    'salesChannelId' => $salesChannelEntity->getId(),
+                    'credentialsComplete' => $credentials->isComplete(),
+                    'auth' => [
+                        'requested' => $request->get('auth'),
+                        'expected' => $credentials->getAuthHash(),
+                    ],
+                ]);
             }
+        } else {
+            $this->get('Releva\Retargeting\Shopware\Internal\LoggerBridge')->add('Tracking is not active', 1585739838, [
+                'salesChannelName' => $salesChannelEntity->getName(),
+                'salesChannelId' => $salesChannelEntity->getId(),
+            ]);
         }
         http_response_code(401);
         die;
