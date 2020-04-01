@@ -5,6 +5,7 @@ namespace Releva\Retargeting\Shopware\Controller;
 use Releva\Retargeting\Base\Credentials;
 use Releva\Retargeting\Base\Exception\RelevanzException;
 use Releva\Retargeting\Shopware\Internal\ProductExporter;
+use Releva\Retargeting\Shopware\Internal\ShopInfo;
 
 use Shopware\Core\Framework\Routing\Annotation\RouteScope; // need for anotations
 use Shopware\Storefront\Controller\StorefrontController as ShopwareStorefrontController;
