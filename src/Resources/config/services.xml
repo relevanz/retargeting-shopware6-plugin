@@ -7,7 +7,7 @@
             <factory service="Shopware\Core\Framework\Log\LoggerFactory" method="createRotating"/>
             <argument type="string">releva_retargeting</argument>
         </service>
-        <service id="Releva\Retargeting\Shopware\Internal\LoggerBridge" public="true">
+        <service id="Releva\Retargeting\Shopware\Internal\MessagesBridge" public="true">
             <argument type="service" id="service_container"/>
             <argument type="service" id="releva_retargeting.logger"/>
         </service>

@@ -4,6 +4,7 @@ namespace Releva\Retargeting\Shopware\Controller;
 
 use Releva\Retargeting\Base\Credentials;
 use Releva\Retargeting\Base\Exception\RelevanzException;
+use Releva\Retargeting\Shopware\Internal\MessagesBridge;
 use Releva\Retargeting\Shopware\Internal\ProductExporter;
 use Releva\Retargeting\Shopware\Internal\ShopInfo;
 
@@ -86,7 +87,7 @@ class StorefrontController extends ShopwareStorefrontController
             if ($credentials->isComplete() && $credentials->getAuthHash() === $request->get('auth')) {
                 return $this;
             } else {
-                $this->get('Releva\Retargeting\Shopware\Internal\LoggerBridge')->add('Auth is not correct', 1585739840, [
+                $this->get(MessagesBridge::class)->add('Auth parameter is invalid.', 1585739840, [
                     'salesChannelName' => $salesChannelEntity->getName(),
                     'salesChannelId' => $salesChannelEntity->getId(),
                     'credentialsComplete' => $credentials->isComplete(),
@@ -97,7 +98,7 @@ class StorefrontController extends ShopwareStorefrontController
                 ]);
             }
         } else {
-            $this->get('Releva\Retargeting\Shopware\Internal\LoggerBridge')->add('Tracking is not active', 1585739838, [
+            $this->get(MessagesBridge::class)->add('Tracking is not active.', 1585739838, [
                 'salesChannelName' => $salesChannelEntity->getName(),
                 'salesChannelId' => $salesChannelEntity->getId(),
             ]);

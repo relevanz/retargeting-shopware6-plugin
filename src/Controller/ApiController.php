@@ -4,6 +4,7 @@ namespace Releva\Retargeting\Shopware\Controller;
 
 use Releva\Retargeting\Base\RelevanzApi;
 use Releva\Retargeting\Base\Exception\RelevanzException;
+use Releva\Retargeting\Shopware\Internal\MessagesBridge;
 use Releva\Retargeting\Shopware\Internal\ShopInfo;
 use Releva\Retargeting\Shopware\Internal\RepositoryHelper;
 
@@ -52,12 +53,12 @@ class ApiController extends AbstractController
                         'iframeUrl' => sprintf(RelevanzApi::RELEVANZ_STATS_FRAME.'%s', $apiKey),
                     ];
                 } catch (\Exception $exception) {
-                    $this->get('Releva\Retargeting\Shopware\Internal\LoggerBridge')->addException($exception, $salesChannelEntity, $notifications);
+                    $this->get(MessagesBridge::class)->addException($exception, $salesChannelEntity, $notifications);
                 }
             }
         }
         if (count($salesChannels) === 0 && count($notifications) === 0) {
-            $this->get('Releva\Retargeting\Shopware\Internal\LoggerBridge')->add('No sales-channels are configured for releva.nz plugin.', 1579084006, [], $notifications);
+            $this->get(MessagesBridge::class)->add('No sales-channels are configured for releva.nz plugin.', 1579084006, [], $notifications);
             $salesChannels[] = [
                 'salesChannel' => 'releva.nz Homepage',
                 'iframeUrl' => 'https://releva.nz/',
@@ -84,7 +85,7 @@ class ApiController extends AbstractController
         try {
             $data['userId'] = $this->verifyApiKey($request->get('config')['apiKey'], $salesChannelEntity);
         } catch (\Exception $exception) {
-            $this->get('Releva\Retargeting\Shopware\Internal\LoggerBridge')->addException($exception, $salesChannelEntity, $notifications);
+            $this->get(MessagesBridge::class)->addException($exception, $salesChannelEntity, $notifications);
         }
         return new JsonResponse([
             'notifications' => $notifications,
