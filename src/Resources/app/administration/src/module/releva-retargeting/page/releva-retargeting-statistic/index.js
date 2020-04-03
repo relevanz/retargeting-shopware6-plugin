@@ -10,7 +10,7 @@ Component.register('releva-retargeting-statistic', {
     ],
 
     mixins: [
-        Mixin.getByName('notification')
+        Mixin.getByName('releva-notification')
     ],
     
     metaInfo() {
@@ -29,7 +29,7 @@ Component.register('releva-retargeting-statistic', {
     created() {
         this.retargetingApiService.getInvolvedSalesChannelsToIframeUrls().then(
             (response) => {
-                this.handleResponseNotifications(response.notifications);
+                this.handleNotifications(response.notifications);
                 this.salesChannelsToIframeUrl = response.data;
                 this.onSalesChannelsToIframeUrlSelectionChange(this.salesChannelsToIframeUrl[0].iframeUrl);
             }
@@ -37,18 +37,6 @@ Component.register('releva-retargeting-statistic', {
     },
     
     methods: {
-        handleResponseNotifications (notifications) {
-            for (var i in notifications) {
-                if (typeof this.$t("releva-retargeting.messages." + notifications[i].code) === "string") {
-                    notifications[i].title = this.$t("releva-retargeting.messages.fallback.title", {title: notifications[i].message});
-                    notifications[i].message = this.$t("releva-retargeting.messages.fallback.message", {code: notifications[i].code, data: JSON.stringify(notifications[i].data)});
-                } else {
-                    notifications[i].title = this.$t("releva-retargeting.messages." + notifications[i].code + ".title", notifications[i].data);
-                    notifications[i].message = this.$t("releva-retargeting.messages." + notifications[i].code + ".message", notifications[i].data);
-                }
-                this.createNotification(notifications[i]);
-            }
-        },
         onSalesChannelsToIframeUrlSelectionChange(iframeUrl) {
             this.currentIframeUrl = iframeUrl;
         }

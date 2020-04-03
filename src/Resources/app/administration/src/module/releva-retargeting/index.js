@@ -1,3 +1,4 @@
+import './mixin/';
 import './page';
 import './component';
 import './extension';

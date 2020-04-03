@@ -1,14 +1,25 @@
 import template from './releva-system-config.html.twig';
 
-const { Component, Defaults } = Shopware;
+const { Component, Defaults, Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
 Component.extend('releva-system-config', 'sw-system-config', {
     template,
+    
     inject: [
         'retargetingApiService'
     ],
-
+    
+    mixins: [
+        Mixin.getByName('releva-notification')
+    ],
+    
+    metaInfo() {
+        return {
+            title: this.$createTitle()
+        };
+    },
+    
     computed: {
         storefrontSalesChannelCriteria: function() {
             const criteria = new Criteria();
@@ -17,18 +28,6 @@ Component.extend('releva-system-config', 'sw-system-config', {
         }
     },
     methods: {
-        handleResponseNotifications (notifications) {
-            for (var i in notifications) {
-                if (typeof this.$t("releva-retargeting.messages." + notifications[i].code) === "string") {
-                    notifications[i].title = this.$t("releva-retargeting.messages.fallback.title", {title: notifications[i].message});
-                    notifications[i].message = this.$t("releva-retargeting.messages.fallback.message", {code: notifications[i].code, data: JSON.stringify(notifications[i].data)});
-                } else {
-                    notifications[i].title = this.$t("releva-retargeting.messages." + notifications[i].code + ".title", notifications[i].data);
-                    notifications[i].message = this.$t("releva-retargeting.messages." + notifications[i].code + ".message", notifications[i].data);
-                }
-                this.createNotification(notifications[i]);
-            }
-        },
         saveReleva () {
             if (this.currentSalesChannelId){
                 this.isLoading = true;
@@ -46,7 +45,7 @@ Component.extend('releva-system-config', 'sw-system-config', {
                             }
                             this.readAll();
                         }
-                        this.handleResponseNotifications(response.notifications);
+                        this.handleNotifications(response.notifications);
                         this.isLoading = false;
                     }
                 );

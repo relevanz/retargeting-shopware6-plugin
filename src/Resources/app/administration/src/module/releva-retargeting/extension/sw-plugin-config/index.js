@@ -1,7 +1,6 @@
 import template from './sw-plugin-config.html.twig';
 
-const { Component, Defaults } = Shopware;
-const { Criteria } = Shopware.Data;
+const { Component } = Shopware;
 
 Component.override('sw-plugin-config', {
     template,
