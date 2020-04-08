@@ -22,10 +22,10 @@ In order to install the module via composer run one of the following commands in
 ## Module installation with zip file
 
 Alternative you can install with uploading 'RelevanzTrackingShopware.zip' in Shopware-6-Backend.  
-Just go to Shopware-6-Backend: Settings => System => Plugins and upload RelevanzTrackingShopware.zip from root-folder of releva.nz plugin.
+Just go to Shopware-6-Backend: Settings => System => Plugins and upload RelevaRetargeting.zip from root-folder of releva.nz plugin.
 
 The zip file could be created with  
-**php createShopwareZip.php**
+**sh ./build.sh**
 
 ## Module installation with sources
 
