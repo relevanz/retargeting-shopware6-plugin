@@ -22,12 +22,16 @@ class CustomCookieProvider implements CookieProviderInterface
         $this->requestStack = $requestStack;
     }
     
+    /**
+     * @todo check if plugin is configured
+     */
     public function getCookieGroups(): array
     {
         return array_merge(
             $this->originalCookieProvider->getCookieGroups(),
             (
                 $this->systemConfigService->get('RelevaRetargeting.config.trackingActive', $this->requestStack->getCurrentRequest()->get('sw-sales-channel-id'))
+                && $this->systemConfigService->get('RelevaRetargeting.config.relevanzUserId', $this->requestStack->getCurrentRequest()->get('sw-sales-channel-id'))
                 ? [
                     [
                         'snippet_name' => 'cookie.groupMarketing',
