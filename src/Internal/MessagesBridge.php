@@ -38,9 +38,10 @@ class MessagesBridge
         1553935786 => ['logger-type' => self::LOGGER_WARNING, 'notification-type' => self::NOTIFICATION_WARNING, ],//The API key cannot be verified.
         1553935569 => ['logger-type' => self::LOGGER_WARNING, 'notification-type' => self::NOTIFICATION_WARNING, ],//The API key cannot be verified.
         1553935480 => ['logger-type' => self::LOGGER_ERROR,   'notification-type' => self::NOTIFICATION_ERROR,   ],//Unable to connect to releva.nz API-Server.
+        1586412248 => ['logger-type' => self::LOGGER_DEBUG,   'notification-type' => null,                       ],//Debug for checking credentials-url
         //frontend messages
-        1585739838 => ['logger-type' => self::LOGGER_DEBUG,   'notification-type' => self::NOTIFICATION_INFO,    ],//Tracking is not active.
-        1585739840 => ['logger-type' => self::LOGGER_DEBUG,   'notification-type' => self::NOTIFICATION_INFO,    ],//Auth Parameter invalid.
+        1585739838 => ['logger-type' => self::LOGGER_DEBUG,   'notification-type' => null,                       ],//Tracking is not active.
+        1585739840 => ['logger-type' => self::LOGGER_DEBUG,   'notification-type' => null,                       ],//Auth Parameter invalid.
     ];
 
     public function __construct(ContainerInterface $container, LoggerInterface $logger)
@@ -70,13 +71,15 @@ class MessagesBridge
         $logLevelConfig = (array_key_exists($code, self::$logLevelMatching) ? self::$logLevelMatching[$code] : self::$logLevelMatching['*']);
         $enviroment = $this->container->getParameter('kernel.environment');
         if ($logLevelConfig['logger-type'] !== 'debug' || $enviroment === 'dev') {
-            $notifications[] = [
-                'variant' => $logLevelConfig['notification-type'],
-                'message' => $message,
-                'code' => $code,
-                "data" => $data,
-            ];
-            if ($this->logger !== null) {
+            if ($logLevelConfig['notification-type'] !== null) {
+                $notifications[] = [
+                    'variant' => $logLevelConfig['notification-type'],
+                    'message' => $message,
+                    'code' => $code,
+                    "data" => $data,
+                ];
+            }
+            if ($this->logger !== null && $logLevelConfig['logger-type'] !== null) {
                 $this->logger->{$logLevelConfig['logger-type']}($message, ['environment' => $enviroment, 'code' => $code, 'data' => $data]);
             }
         }

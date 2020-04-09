@@ -98,13 +98,15 @@ class ApiController extends AbstractController
         /* @var $systemConfigService SystemConfigService */
         $systemConfigService = $this->get(SystemConfigService::class);
         try {
-            $userId = (int) RelevanzApi::verifyApiKey($apiKey, [
+            $parameters = [
                 'callback-url' => sprintf(
                     '%s%s',
                     $this->getDomainForSalesChannel($salesChannelEntity)->getUrl(),// throw Exception, no domain configured
                     $this->get(ShopInfo::class)->getUrlCallback()
                 ),
-            ])->getUserId();
+            ];
+            $this->get(MessagesBridge::class)->add('VerifyApiKey-parameters.', 1586412248, $parameters);
+            $userId = (int) RelevanzApi::verifyApiKey($apiKey, $parameters)->getUserId();
             $systemConfigService->set('RelevaRetargeting.config.relevanzUserId', $userId, $salesChannelEntity->getId());
             return $userId;
         } catch (\Exception $exception) {
