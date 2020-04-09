@@ -9,6 +9,9 @@
         }
     ],
     "require": {
+        "shopware/core": "*",
+        "shopware/administration": "*",
+        "shopware/storefront": "*",
         "relevanz/retargeting-base-lib": "*"
     },
     "type": "shopware-platform-plugin",
