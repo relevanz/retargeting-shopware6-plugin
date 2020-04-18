@@ -7,7 +7,7 @@
                 entity="sales_channel"
                 @input="onSalesChannelChanged"
                 :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
-                :placeholder="$tc('releva-retargeting.general.storefront')"
+                :placeholder="$tc('releva-retargeting.config.relevaSalesChannelSwitch.label')"
                 :criteria="storefrontSalesChannelCriteria"
                 :value="currentSalesChannelId"
             />
@@ -21,11 +21,11 @@
                 :isLoading="isLoading"
                 :title="getInlineSnippet(card.title)"
             >
-                <template v-if="currentSalesChannelId !== null || index !== 0" >
+                <template v-if="card.visible">
                     <slot name="beforeElements" v-bind="{ card, config: actualConfigData[currentSalesChannelId] }"></slot>
                     <template v-if="!isLoading">
                         <template v-for="element in card.elements">
-                            <slot name="card-element" v-bind="{ element: getElementBind(element), config: actualConfigData[currentSalesChannelId], card }">
+                            <slot v-if="element.visible" name="card-element" v-bind="{ element: getElementBind(element), config: actualConfigData[currentSalesChannelId], card }">
                                 {% block sw_system_config_content_card_field %}
                                     <sw-form-field-renderer 
                                         v-bind="getElementBind(element)"
@@ -34,13 +34,13 @@
                                     </sw-form-field-renderer>
                                 {% endblock %}
                             </slot>
+                            <slot v-else-if="element.message">
+                                <p>{{ element.message }}</p>
+                            </slot>
                         </template>
                         <slot name="card-element-last" />
                     </template>
                     <slot name="afterElements" v-bind="{ card, config: actualConfigData[currentSalesChannelId] }"></slot>
-                </template>
-                <template v-else>
-                    {{ $tc('releva-retargeting.general.fallback_config_relevanzapikey') }}
                 </template>
             </sw-card>
        {% endblock %}

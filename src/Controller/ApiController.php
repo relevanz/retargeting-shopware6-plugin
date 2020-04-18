@@ -46,7 +46,7 @@ class ApiController extends AbstractController
                     $this->getDomainForSalesChannel($salesChannelEntity);//@throws Exception if sales channel doesnt have domain
                     $userId = $systemConfigService->get('RelevaRetargeting.config.relevanzUserId', $salesChannelEntity->getId());
                     if (empty($userId)) {
-                        $this->verifyApiKey($apiKey, $salesChannelEntity);//throws Exception
+                        $this->verifyApiKey($apiKey, $salesChannelEntity, true);//throws Exception
                     }
                     $salesChannels[] = [
                         'salesChannel' => $salesChannelEntity->getName(),
@@ -83,7 +83,7 @@ class ApiController extends AbstractController
         $data = ['userId' => null, ];
         $notifications = [];
         try {
-            $data['userId'] = $this->verifyApiKey($request->get('config')['apiKey'], $salesChannelEntity);
+            $data['userId'] = $this->verifyApiKey($request->get('config')['apiKey'], $salesChannelEntity, array_key_exists('save', $request->get('config')) && $request->get('config')['save'] === 'true' ? true : false);
         } catch (\Exception $exception) {
             $this->get(MessagesBridge::class)->addException($exception, $salesChannelEntity, $notifications);
         }
@@ -93,24 +93,32 @@ class ApiController extends AbstractController
         ]);
     }
     
-    private function verifyApiKey (string $apiKey, SalesChannelEntity $salesChannelEntity): int
+    private function verifyApiKey (string $apiKey, SalesChannelEntity $salesChannelEntity, bool $save): int
     {
         /* @var $systemConfigService SystemConfigService */
         $systemConfigService = $this->get(SystemConfigService::class);
         try {
-            $parameters = [
-                'callback-url' => sprintf(
-                    '%s%s',
-                    $this->getDomainForSalesChannel($salesChannelEntity)->getUrl(),// throw Exception, no domain configured
-                    $this->get(ShopInfo::class)->getUrlCallback()
-                ),
-            ];
+            $parameters = 
+                $save 
+                ? [
+                    'callback-url' => sprintf(
+                        '%s%s',
+                        $this->getDomainForSalesChannel($salesChannelEntity)->getUrl(),// throw Exception, no domain configured
+                        $this->get(ShopInfo::class)->getUrlCallback()
+                    ),] 
+                : [
+                ]
+            ;
             $this->get(MessagesBridge::class)->add('VerifyApiKey-parameters.', 1586412248, $parameters);
             $userId = (int) RelevanzApi::verifyApiKey($apiKey, $parameters)->getUserId();
-            $systemConfigService->set('RelevaRetargeting.config.relevanzUserId', $userId, $salesChannelEntity->getId());
+            if ($save) {
+                $systemConfigService->set('RelevaRetargeting.config.relevanzUserId', $userId, $salesChannelEntity->getId());
+            }
             return $userId;
         } catch (\Exception $exception) {
-            $systemConfigService->set('RelevaRetargeting.config.relevanzUserId', null, $salesChannelEntity->getId());
+            if ($save) {
+                $systemConfigService->set('RelevaRetargeting.config.relevanzUserId', null, $salesChannelEntity->getId());
+            }
             throw $exception;
         }
     }

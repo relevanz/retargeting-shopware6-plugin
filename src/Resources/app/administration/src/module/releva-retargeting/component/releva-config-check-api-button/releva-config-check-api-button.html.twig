@@ -1,0 +1,24 @@
+{% block sw_text_field %}aaa
+    {% block releva_config_check_api_button %}
+        <sw-contextual-field v-bind="$attrs" :name="formFieldName">
+            <template #sw-field-input="{identification, error, disabled, size, setFocusClass, removeFocusClass }">
+                <input
+                    :name="identification"
+                    :id="identification"
+                    :value="currentValue"
+                    :placeholder="placeholder"
+                    :disabled="disabled"
+                    @input="onInput"
+                    @change="onChange"
+                    @focus="setFocusClass"
+                    @blur="removeFocusClass">
+            </template>
+            <template #sw-contextual-field-suffix="{ disabled }">
+                <span @click="changeMode(disabled)" style="display: inline-flex;cursor:pointer;">
+                    <span v-if="buttonText" style="margin-right: 1em;">{{buttonText}}</span>
+                    <sw-icon v-if="buttonIcon" :color="buttonIcon.color" :name="buttonIcon.name" :small="true"></sw-icon>
+                </span>
+            </template>
+        </sw-contextual-field>
+    {% endblock %}
+{% endblock %}

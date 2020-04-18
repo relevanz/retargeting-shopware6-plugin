@@ -3,17 +3,23 @@
     <card>
         <title>releva.nz Settings</title>
         <title lang="de-DE">releva.nz Einstellungen</title>
-        <input-field>
+        <component name="releva-config-check-api-button">
             <name>relevanzApiKey</name>
-            <label>Api Key</label>
-            <label lang="de-DE">Api Schlüssel</label>
-        </input-field>
-        <input-field>
+            <label>API-Key</label>
+            <label lang="de-DE">API Schlüssel</label>
+        </component>
+        <!--
+            cannot use input-field after component-node
+            @link https://issues.shopware.com/issues/NEXT-8104
+        -->
+        <component name="sw-text-field">
             <name>relevanzUserId</name>
             <label>User-ID</label>
             <label lang="de-DE">Benutzer ID</label>
+            <helpText>User-ID will be setted after API-Key-Validation.</helpText>
+            <helpText lang="de-DE">Benutzer ID wird nach der API Schlüssel Validierung gefüllt.</helpText>
             <disabled>true</disabled>
-        </input-field>
+        </component>
     </card>
     <card>
         <title>releva.nz Tracking</title>

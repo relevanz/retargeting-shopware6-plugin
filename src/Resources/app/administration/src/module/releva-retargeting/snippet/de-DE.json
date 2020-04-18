@@ -1,9 +1,16 @@
 {
     "releva-retargeting": {
         "general": {
-            "mainMenuItemGeneral": "releva.nz retargeting",
-            "storefront": "Storefront-Verkaufskanal",
-            "fallback_config_relevanzapikey": "Api Key ist nur mit ausgewählten @:(releva-retargeting.general.storefront) konfigurierbar."
+            "mainMenuItemGeneral": "releva.nz retargeting"
+        },
+        "config": {
+            "relevanzApiKey": {
+                "message": "Api Key ist nur mit ausgewählten @:(releva-retargeting.config.relevaSalesChannelSwitch.label) konfigurierbar.",
+                "button": "API-Zugangsdaten testen"
+            },
+            "relevaSalesChannelSwitch": {
+                "label": "Storefront-Verkaufskanal"
+            }
         },
         "messages": {
             "fallback": {
