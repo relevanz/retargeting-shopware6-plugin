@@ -18,6 +18,14 @@ Mixin.register('releva-notification', {
                 }
                 this.createNotification({title: title, message: message, variant: notifications[i].variant});
             }
+        },
+        handleAjaxErrors (data) {
+            if (data && data.errors) {
+                var applicationRoot = Application.getApplicationRoot();
+                data.errors.forEach((error) => {
+                    this.createNotification({title: applicationRoot.$t("releva-retargeting.messages.ajax.title"), message: applicationRoot.$t("releva-retargeting.messages.ajax.message", error), variant: "error"});
+                });
+            }
         }
     }
 });

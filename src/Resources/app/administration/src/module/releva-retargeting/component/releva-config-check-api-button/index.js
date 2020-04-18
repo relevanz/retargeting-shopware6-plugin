@@ -1,4 +1,5 @@
 import template from './releva-config-check-api-button.html.twig';
+import './releva-config-check-api-button.scss';
 
 const { Component, Mixin } = Shopware;
 
@@ -8,7 +9,7 @@ Component.extend('releva-config-check-api-button', 'sw-text-field', {
     inheritAttrs: false,
     
     mixins: [
-        Mixin.getByName('releva-notification')
+        Mixin.getByName('releva-notification'),
     ],
     
     inject: [
@@ -44,6 +45,7 @@ Component.extend('releva-config-check-api-button', 'sw-text-field', {
             }
         }
     },
+    
     methods: {
         changeMode(disabled) {
             if (disabled) {
@@ -59,7 +61,10 @@ Component.extend('releva-config-check-api-button', 'sw-text-field', {
                     self.checkApiState = response.data.userId === null ? "error" : "success";
                     this.handleNotifications(response.notifications);
                 }
-            );
+            ).catch(({ response: { data } }) => {
+                self.checkApiState = "unchecked";
+                self.handleAjaxErrors(data);
+            });
         }
     }
 });

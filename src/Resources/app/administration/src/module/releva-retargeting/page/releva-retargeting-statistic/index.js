@@ -1,4 +1,5 @@
 import template from './releva-retargeting-statistic.html.twig';
+import './releva-retargeting-statistic.scss';
 
 const { Component, Mixin } = Shopware;
 
@@ -33,7 +34,9 @@ Component.register('releva-retargeting-statistic', {
                 this.salesChannelsToIframeUrl = response.data;
                 this.onSalesChannelsToIframeUrlSelectionChange(this.salesChannelsToIframeUrl[0].iframeUrl);
             }
-        );
+        ).catch(({ response: { data } }) => {
+            this.handleAjaxErrors(data);
+        });
     },
     
     methods: {

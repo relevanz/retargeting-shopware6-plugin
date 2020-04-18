@@ -83,7 +83,7 @@ class ApiController extends AbstractController
         $data = ['userId' => null, ];
         $notifications = [];
         try {
-            $data['userId'] = $this->verifyApiKey($request->get('config')['apiKey'], $salesChannelEntity, array_key_exists('save', $request->get('config')) && $request->get('config')['save'] === 'true' ? true : false);
+            $data['userId'] = $this->verifyApiKey($request->get('config')['apiKey'], $salesChannelEntity, array_key_exists('save', $request->get('config')) && $request->get('config')['save'] === true ? true : false);
         } catch (\Exception $exception) {
             $this->get(MessagesBridge::class)->addException($exception, $salesChannelEntity, $notifications);
         }

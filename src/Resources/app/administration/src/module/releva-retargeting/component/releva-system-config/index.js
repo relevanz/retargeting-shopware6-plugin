@@ -1,6 +1,6 @@
 import template from './releva-system-config.html.twig';
 
-const { Component, Defaults, Mixin } = Shopware;
+const { Component, Defaults, Mixin, State } = Shopware;
 const { Criteria } = Shopware.Data;
 
 Component.extend('releva-system-config', 'sw-system-config', {
@@ -37,7 +37,7 @@ Component.extend('releva-system-config', 'sw-system-config', {
                 if (typeof element.config.componentName === "string") {
                     for (var configType of ['label', 'helpText']) {
                         if (typeof element.config[configType] === "object") {
-                            for (var locale of [Shopware.State.getters.adminLocaleLanguage + '-' + Shopware.State.getters.adminLocaleRegion, 'en-GB']) {
+                            for (var locale of [State.getters.adminLocaleLanguage + '-' + State.getters.adminLocaleRegion, 'en-GB']) {
                                 if (element.config[configType][locale] !== undefined) {
                                     element.config[configType] = element.config[configType][locale];
                                     break;
@@ -103,29 +103,35 @@ Component.extend('releva-system-config', 'sw-system-config', {
             }
             return true;
         },
-        saveReleva () {
-            if (this.currentSalesChannelId){
-                this.isLoading = true;
-                this.retargetingApiService.getVerifyApiKey({
-                    apiKey: this.actualConfigData[this.currentSalesChannelId]["RelevaRetargeting.config.relevanzApiKey"],
-                    salesChannel: this.currentSalesChannelId,
-                    save: 'true'
-                }).then(
-                    (response) => {
-                        if (
-                            typeof this.actualConfigData[this.currentSalesChannelId]["RelevaRetargeting.config.relevanzUserId"] === 'undefined'
-                            || this.actualConfigData[this.currentSalesChannelId]["RelevaRetargeting.config.relevanzUserId"] !== response.data.userId
-                        ) {
-                            if (this.actualConfigData.hasOwnProperty(this.currentSalesChannelId)) {
-                                delete this.actualConfigData[this.currentSalesChannelId];
+        saveAll() {
+            this.isLoading = true;
+            return this.systemConfigApiService
+                .batchSave(this.actualConfigData)
+                .finally(() => {
+                    if (this.currentSalesChannelId){
+                        this.retargetingApiService.getVerifyApiKey({
+                            apiKey: this.actualConfigData[this.currentSalesChannelId]["RelevaRetargeting.config.relevanzApiKey"],
+                            salesChannel: this.currentSalesChannelId,
+                            save: true
+                        }).then(
+                            (response) => {
+                                if (
+                                    typeof this.actualConfigData[this.currentSalesChannelId]["RelevaRetargeting.config.relevanzUserId"] === 'undefined'
+                                    || this.actualConfigData[this.currentSalesChannelId]["RelevaRetargeting.config.relevanzUserId"] !== response.data.userId
+                                ) {
+                                    if (this.actualConfigData.hasOwnProperty(this.currentSalesChannelId)) {
+                                        delete this.actualConfigData[this.currentSalesChannelId];
+                                    }
+                                    this.readAll();
+                                }
+                                this.handleNotifications(response.notifications);
                             }
-                            this.readAll();
-                        }
-                        this.handleNotifications(response.notifications);
-                        this.isLoading = false;
+                        ).catch(({ response: { data } }) => {
+                            this.handleAjaxErrors(data);
+                        }).finally(() => this.isLoading = false);
                     }
-                );
-            }
+                })
+            ;
         }
     }
     

@@ -13,6 +13,10 @@
             }
         },
         "messages": {
+            "ajax": {
+                "title": "@:(releva-retargeting.general.mainMenuItemGeneral) hat einen Fehler verursacht",
+                "message": "{title}: {detail}"
+            },
             "fallback": {
                 "title": "{title}",
                 "message": "code: {code}, data: {data}"
