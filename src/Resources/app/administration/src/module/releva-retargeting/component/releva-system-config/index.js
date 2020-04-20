@@ -105,33 +105,26 @@ Component.extend('releva-system-config', 'sw-system-config', {
         },
         saveAll() {
             this.isLoading = true;
-            return this.systemConfigApiService
-                .batchSave(this.actualConfigData)
-                .finally(() => {
-                    if (this.currentSalesChannelId){
-                        this.retargetingApiService.getVerifyApiKey({
-                            apiKey: this.actualConfigData[this.currentSalesChannelId]["RelevaRetargeting.config.relevanzApiKey"],
-                            salesChannel: this.currentSalesChannelId,
-                            save: true
-                        }).then(
-                            (response) => {
-                                if (
-                                    typeof this.actualConfigData[this.currentSalesChannelId]["RelevaRetargeting.config.relevanzUserId"] === 'undefined'
-                                    || this.actualConfigData[this.currentSalesChannelId]["RelevaRetargeting.config.relevanzUserId"] !== response.data.userId
-                                ) {
-                                    if (this.actualConfigData.hasOwnProperty(this.currentSalesChannelId)) {
-                                        delete this.actualConfigData[this.currentSalesChannelId];
-                                    }
-                                    this.readAll();
-                                }
-                                this.handleNotifications(response.notifications);
-                            }
-                        ).catch(({ response: { data } }) => {
-                            this.handleAjaxErrors(data);
-                        }).finally(() => this.isLoading = false);
+            if (this.currentSalesChannelId){
+                return this.retargetingApiService.getVerifyApiKey({
+                    apiKey: this.actualConfigData[this.currentSalesChannelId]["RelevaRetargeting.config.relevanzApiKey"],
+                    salesChannel: this.currentSalesChannelId,
+                    save: true// could be false
+                }).then(
+                    (response) => {
+                        if (this.actualConfigData.hasOwnProperty(this.currentSalesChannelId)) {
+                            this.actualConfigData[this.currentSalesChannelId]["RelevaRetargeting.config.relevanzUserId"] = response.data.userId;
+                        }
+                        this.handleNotifications(response.notifications);
+                        return this.systemConfigApiService.batchSave(this.actualConfigData);
                     }
-                })
-            ;
+                ).catch(({ response: { data } }) => {
+                    this.handleAjaxErrors(data);
+                    return this.systemConfigApiService.batchSave(this.actualConfigData);
+                }).finally(() => this.isLoading = false);
+            } else {
+                return this.systemConfigApiService.batchSave(this.actualConfigData).finally(() => this.isLoading = false);
+            }
         }
     }
     
