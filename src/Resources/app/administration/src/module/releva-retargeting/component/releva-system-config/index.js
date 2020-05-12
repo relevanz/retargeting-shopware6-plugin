@@ -63,10 +63,7 @@ Component.extend('releva-system-config', 'sw-system-config', {
                             // add currentSalesChannelId for verify-api-request
                             element.salesChannelId = self.currentSalesChannelId;
                         }
-                        if (//only stores
-                            ["RelevaRetargeting.config.relevanzApiKey", "RelevaRetargeting.config.relevanzUserId"].indexOf(element.name) !== -1
-                            && self.currentSalesChannelId === null
-                        ) {
+                        if (self.currentSalesChannelId === null && element.config.scope !== undefined && element.config.scope === "storefront") {
                             element.visible = false;
                             var message = "releva-retargeting" + element.name.substr(element.name.indexOf('.')) + ".message";
                             var translatedMessage = self.$tc(message);

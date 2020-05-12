@@ -7,6 +7,7 @@
             <name>relevanzApiKey</name>
             <label>API-Key</label>
             <label lang="de-DE">API Schlüssel</label>
+            <scope>storefront</scope>
         </component>
         <!--
             cannot use input-field after component-node
@@ -19,6 +20,7 @@
             <helpText>User-ID will be setted after API-Key-Validation.</helpText>
             <helpText lang="de-DE">Benutzer ID wird nach der API Schlüssel Validierung gefüllt.</helpText>
             <disabled>true</disabled>
+            <scope>storefront</scope>
         </component>
     </card>
     <card>
