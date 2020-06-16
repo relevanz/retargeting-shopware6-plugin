@@ -15,7 +15,7 @@ class CustomCookieProvider implements CookieProviderInterface
     
     private $requestStack;
 
-    function __construct(CookieProviderInterface $originalCookieProvider, SystemConfigService $systemConfigService, RequestStack $requestStack)
+    public function __construct(CookieProviderInterface $originalCookieProvider, SystemConfigService $systemConfigService, RequestStack $requestStack)
     {
         $this->originalCookieProvider = $originalCookieProvider;
         $this->systemConfigService = $systemConfigService;

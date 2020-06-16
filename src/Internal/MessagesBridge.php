@@ -68,7 +68,7 @@ class MessagesBridge
     
     public function add (string $message, int $code, array $data, array &$notifications = []):self
     {
-        $logLevelConfig = (array_key_exists($code, self::$logLevelMatching) ? self::$logLevelMatching[$code] : self::$logLevelMatching['*']);
+        $logLevelConfig = (array_key_exists($code, static::$logLevelMatching) ? static::$logLevelMatching[$code] : static::$logLevelMatching['*']);
         $enviroment = $this->container->getParameter('kernel.environment');
         if ($logLevelConfig['logger-type'] !== 'debug' || $enviroment === 'dev') {
             if ($logLevelConfig['notification-type'] !== null) {

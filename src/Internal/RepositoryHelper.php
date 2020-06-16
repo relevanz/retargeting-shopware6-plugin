@@ -52,17 +52,10 @@ class RepositoryHelper
     
     private function handleRepository (EntityRepository $repository, Context $context, int $limit = null, int $offset = null, $autoloads = [], Filter ...$filters): EntitySearchResult
     {
-        $definitionFields = $repository->getDefinition()->getFields()->getElements();
-        foreach (array_intersect($autoloads, array_keys($definitionFields)) as $propertyName) {//manipulates given EntityRepository to allow autoload of related repositories during query
-            $reflectionClass = new \ReflectionClass($definitionFields[$propertyName]);
-            if ($reflectionClass->hasProperty('autoload')) {
-                $reflectionProperty = $reflectionClass->getProperty('autoload');
-                $reflectionProperty->setAccessible(true);
-                $reflectionProperty->setValue($definitionFields[$propertyName], true);
-                $reflectionProperty->setAccessible(false);
-            }
-        }
         $criteria = (new Criteria())->setLimit($limit)->setOffset($offset);
+        foreach ($autoloads as $autoload) {
+            $criteria->addAssociation($autoload);
+        }
         foreach ($filters as $filter) {
             $criteria->addFilter($filter);
         }

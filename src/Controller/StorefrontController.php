@@ -30,52 +30,63 @@ class StorefrontController extends ShopwareStorefrontController
      */
     public function callbackAction(Request $request, SalesChannelContext $salesChannelContext): JsonResponse
     {
-        $this->checkCredentials($request, $salesChannelContext);
-        /* @var $shopInfo ShopInfo */
-        $shopInfo = $this->get(ShopInfo::class);
-        return new JsonResponse([
-            'plugin-version' => $shopInfo->getPluginVersion(),
-            'shop' => ['system' => $shopInfo->getShopSystem(), 'version' => $shopInfo->getShopVersion(), ],
-            'environment' => $shopInfo->getServerEnvironment(),
-            'callbacks' => [
-                'callback' => ['url' => $request->getSchemeAndHttpHost().$shopInfo->getUrlCallback(), 'parameters' => [], ],
-                'export' => [
-                    'url' => $request->getSchemeAndHttpHost().$shopInfo->getUrlProductExport(),
-                    'parameters' => [
-                        'format' => ['values' => ['csv', 'json'], 'default' => 'csv', 'optional' => true, ],
-                        'page' => ['type' => 'integer', 'optional' => true, 'info' => ['items-per-page' => self::ITEMS_PER_PAGE, ], ],
+        $response = new JsonResponse();
+        if (!$this->checkCredentials($request, $salesChannelContext)) {
+            $response->setStatusCode(401)->setContent('');
+            return $response;
+        } else {
+            /* @var $shopInfo ShopInfo */
+            $shopInfo = $this->get(ShopInfo::class);
+            $response->setData([
+                'plugin-version' => $shopInfo->getPluginVersion(),
+                'shop' => ['system' => $shopInfo->getShopSystem(), 'version' => $shopInfo->getShopVersion(), ],
+                'environment' => $shopInfo->getServerEnvironment(),
+                'callbacks' => [
+                    'callback' => ['url' => $request->getSchemeAndHttpHost().$shopInfo->getUrlCallback(), 'parameters' => [], ],
+                    'export' => [
+                        'url' => $request->getSchemeAndHttpHost().$shopInfo->getUrlProductExport(),
+                        'parameters' => [
+                            'format' => ['values' => ['csv', 'json'], 'default' => 'csv', 'optional' => true, ],
+                            'page' => ['type' => 'integer', 'optional' => true, 'info' => ['items-per-page' => self::ITEMS_PER_PAGE, ], ],
+                        ],
                     ],
-                ],
-            ]
-        ]);
+                ]
+            ]);
+        }
+        return $response;
     }
     
     /**
      * @Route("/releva/retargeting/products", name="frontend.releva.retargeting.products", options={"seo"="false"}, methods={"GET"})
      */
-    public function productsAction(Request $request, SalesChannelContext $salesChannelContext) : void
+    public function productsAction(Request $request, SalesChannelContext $salesChannelContext) : JsonResponse
     {
-        $this->checkCredentials($request, $salesChannelContext);
-        try {
-            $page = (int) $request->get('page') < 1 ? null : (int) $request->get('page') - 1;
-            $productExporter = $this->get(ProductExporter::class);
-            $exporter = $productExporter->export(
-                $salesChannelContext,
-                $request->get('format') === 'json' ? ProductExporter::FORMAT_JSON : ProductExporter::FORMAT_CSV,
-                $page === null ? null : self::ITEMS_PER_PAGE,
-                $page === null ? null : $page * self::ITEMS_PER_PAGE
-            );
-            foreach ($exporter->getHttpHeaders() as $headerKey => $headerValue) {
-                header(sprintf('%s:%s', $headerKey, $headerValue));
+        $response = new JsonResponse;
+        if (!$this->checkCredentials($request, $salesChannelContext)) {
+            $response->setStatusCode(401)->setContent('');
+            return $response;
+        } else {
+            try {
+                $page = (int) $request->get('page') < 1 ? null : (int) $request->get('page') - 1;
+                $productExporter = $this->get(ProductExporter::class);
+                $exporter = $productExporter->export(
+                    $salesChannelContext,
+                    $request->get('format') === 'json' ? ProductExporter::FORMAT_JSON : ProductExporter::FORMAT_CSV,
+                    $page === null ? null : self::ITEMS_PER_PAGE,
+                    $page === null ? null : $page * self::ITEMS_PER_PAGE
+                );
+                foreach ($exporter->getHttpHeaders() as $headerKey => $headerValue) {
+                    header(sprintf('%s:%s', $headerKey, $headerValue));
+                }
+                $response->setContent($exporter->getContents());
+            } catch (\Exception $exception) {
+                $response->setStatusCode($exception instanceof RelevanzException && $exception->getCode() === 1585554289 ? 400 : 500);
             }
-            echo $exporter->getContents();
-        } catch (\Exception $exception) {
-            http_response_code($exception instanceof RelevanzException && $exception->getCode() === 1585554289 ? 400 : 500);
         }
-        die;
+        return $response;
     }
     
-    private function checkCredentials (Request $request, SalesChannelContext $salesChannelContext): self {
+    private function checkCredentials (Request $request, SalesChannelContext $salesChannelContext): bool {
         $salesChannelEntity = $salesChannelContext->getSalesChannel();
         /* @var $systemConfigService SystemConfigService */
         $systemConfigService = $this->get(SystemConfigService::class);
@@ -85,7 +96,7 @@ class StorefrontController extends ShopwareStorefrontController
                 $systemConfigService->get('RelevaRetargeting.config.relevanzUserId', $salesChannelEntity->getId())
             );
             if ($credentials->isComplete() && $credentials->getAuthHash() === $request->get('auth')) {
-                return $this;
+                return true;
             } else {
                 $this->get(MessagesBridge::class)->add('Auth parameter is invalid.', 1585739840, [
                     'salesChannelName' => $salesChannelEntity->getName(),
@@ -103,8 +114,7 @@ class StorefrontController extends ShopwareStorefrontController
                 'salesChannelId' => $salesChannelEntity->getId(),
             ]);
         }
-        http_response_code(401);
-        die;
+        return false;
     }
     
 }

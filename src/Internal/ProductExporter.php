@@ -6,6 +6,7 @@ use Releva\Retargeting\Base\Export\ProductCsvExporter;
 use Releva\Retargeting\Base\Export\ExporterInterface;
 use Releva\Retargeting\Base\Export\ProductJsonExporter;
 use Releva\Retargeting\Base\Export\Item\ProductExportItem;
+use Releva\Retargeting\Base\Exception\RelevanzException;
 use Releva\Retargeting\Shopware\Internal\RepositoryHelper;
 
 use Psr\Container\ContainerInterface;
