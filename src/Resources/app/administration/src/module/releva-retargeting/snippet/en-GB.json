@@ -5,7 +5,6 @@
         },
         "config": {
             "relevanzApiKey": {
-                "message" : "Api Key is only configurable with selected @:(releva-retargeting.config.relevaSalesChannelSwitch.label).",
                 "button" : "Check API-Access"
             },
             "relevaSalesChannelSwitch": {

@@ -14,18 +14,17 @@
         </div>
         {% block sw_system_config_content_card_releva %}
             <sw-card
-                v-if="typeof actualConfigData[currentSalesChannelId] !== 'undefined'" 
                 v-for="card, index in config"
                 :key="index"
                 :class="`sw-system-config__card--${index}`"
                 :isLoading="isLoading"
                 :title="getInlineSnippet(card.title)"
             >
-                <template v-if="card.visible">
-                    <slot name="beforeElements" v-bind="{ card, config: actualConfigData[currentSalesChannelId] }"></slot>
-                    <template v-if="!isLoading">
-                        <template v-for="element in card.elements">
-                            <slot v-if="element.visible" name="card-element" v-bind="{ element: getElementBind(element), config: actualConfigData[currentSalesChannelId], card }">
+                <slot name="beforeElements" v-bind="{ card, config: actualConfigData[currentSalesChannelId] }"></slot>
+                <template v-if="!isLoading">
+                    <template v-for="element in card.elements">
+                        <slot name="card-element" v-bind="{ element: getElementBind(element), config: actualConfigData[currentSalesChannelId], card }">
+                            <template v-if="currentSalesChannelId !== null || element.config.scope !== 'storefront'">
                                 {% block sw_system_config_content_card_field %}
                                     <sw-form-field-renderer 
                                         v-bind="getElementBind(element)"
@@ -33,15 +32,15 @@
                                     >
                                     </sw-form-field-renderer>
                                 {% endblock %}
-                            </slot>
-                            <slot v-else-if="element.message">
-                                <p>{{ element.message }}</p>
-                            </slot>
-                        </template>
-                        <slot name="card-element-last" />
+                            </template>
+                            <template v-else-if="typeof element.config.scopeErrorMessage !== 'undefined'">
+                                <p>{{ element.config.scopeErrorMessage }}</p>
+                            </template>
+                        </slot>
                     </template>
-                    <slot name="afterElements" v-bind="{ card, config: actualConfigData[currentSalesChannelId] }"></slot>
+                    <slot name="card-element-last"/>
                 </template>
+                <slot name="afterElements" v-bind="{ card, config: actualConfigData[currentSalesChannelId] }"></slot>
             </sw-card>
        {% endblock %}
    </div>

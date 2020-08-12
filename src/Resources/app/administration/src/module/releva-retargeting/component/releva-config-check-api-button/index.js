@@ -55,7 +55,15 @@ Component.extend('releva-config-check-api-button', 'sw-text-field', {
             var self = this;
             this.retargetingApiService.getVerifyApiKey({
                 apiKey: this.currentValue.trim(),
-                salesChannel: this.$attrs.salesChannelId
+                salesChannel: function(current) {
+                    while (typeof current.$parent !== "undefined") {
+                        current = current.$parent;
+                        if (typeof current.currentSalesChannelId !=="undefined") {
+                            return current.currentSalesChannelId;
+                        }
+                    }
+                    return '';
+                }(this)
             }).then(
                 (response) => {
                     self.checkApiState = response.data.userId === null ? "error" : "success";
