@@ -27,6 +27,18 @@
         "label": {
             "de-DE": "releva.nz - Technology for personalized marketing",
             "en-GB": "releva.nz - Technology for personalized marketing"
+        },
+        "description": {
+            "de-DE": "Hol deine Besucher zurück und mach sie zu Käufern - mit dynamischem Retargeting. Funktionen: Automatische Erstellung & Platzierung von Online-Bannern, Kampagnenoptimierung durch KI uvm.",
+            "en-GB": "Bring your visitors back and turn them into buyers - with dynamic retargeting. Features: automatic creation and placement of online banners, campaign optimization via AI and many more."
+        },
+        "manufacturerLink": {
+            "de-DE": "https://releva.nz/",
+            "en-GB": "https://releva.nz/"
+        },
+        "supportLink": {
+            "de-DE": "https://releva.nz/kontakt/",
+            "en-GB": "https://releva.nz/kontakt/"
         }
     }
 }
