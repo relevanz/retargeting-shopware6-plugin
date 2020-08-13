@@ -5,9 +5,10 @@
                 labelProperty="name"
                 valueProperty="id"
                 entity="sales_channel"
-                @input="onSalesChannelChanged"
+                @change="onSalesChannelChanged"
                 :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
                 :placeholder="$tc('releva-retargeting.config.relevaSalesChannelSwitch.label')"
+                :resetOption="$tc('sw-sales-channel-switch.labelDefaultOption')"
                 :criteria="storefrontSalesChannelCriteria"
                 :value="currentSalesChannelId"
             />
