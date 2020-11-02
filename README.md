@@ -1,25 +1,20 @@
-## Features
+# releva.nz
 
-### Dynamic Retargeting With relva.nz: We Convert Visitors to Buyers
+## Welcome to the releva.nz plugin repository
+You can find more information about [releva.nz](https://releva.nz) on our website. Here you can have a look at the source code and look at and discuss open issues. 
 
-The releva.nz plugin for Shopware converts visitors into buyers, even when they already left your webshop. Via dynamic retargeting, potential buyers will be targeted with personalized online banners on external websites. Releva.nz takes care of all set-up steps: From pixelating your webshop over automatically designing your product-based ads to optimizing campaigns with Artificial Intelligence. With just a few clicks, you can increase the conversion rate of your webshop until up to 12 percent without any programming or design skills.
+## Installation
+Information and documentation for installation and use of the plugin can be found in our [Knowledge Base](https://help.releva.nz). This is the easy way :)
 
-* **Automated creation of dynamic ad banners:** You don’t have to design your display ads by yourself - releva.nz generates appealing ads automatically based on your shop products.
-* **Optimal use of the daily budget:** You determine your daily ad budget in the Shop backend and releva.nz makes sure it’s being used cost-efficiently. 
-* **Campaign optimization based on Artificial Intelligence:** Self-learning algorithms optimize the delivery of your ads. For example: Mainly visitors who have just left your store are targeted.
-* **Simple integration of the retargeting pixel:** The releva.nz plugin takes care of the technical aspects for you and places the retargeting pixel independently on all relevant pages of your webshop.
-* **Metered retargeting ads:** Only webshop visitors, who haven’t bought anything from you are going to be seeing ad banners on external websites. We pay close attention to not overdo it and not flood your potential clients with too many ads.
-* **Ad distribution to up to 30 ad networks:** Of course, ads are played on the Google display network. Additionally, releva.nz can connect you to 30 more ad networks. This lets you reach 85% of all ad locations in DACH (Germany, Austria, Switzerland) as well as 85% of ad spaces on english sites. 
-* **Realtime statistics in the webshop backend:** Live statistics in the Shopware backend allow you to watch over your ad budget as well as your visitors’ behavior. You can clearly follow how efficiently our self-learning algorithm places ads.
-
-## Module installation via composer
+Instructions for tech-savvy people:
+### Module installation via composer
 
 In order to install the module via composer run one of the following commands in commandline in your shop base directory 
 (where the shop's composer.json file resides).
 * **composer require relevanz/retargeting-shopware-plugin** to install the released version compatible with Shopware eShop Compilation 6.*
 * **composer require relevanz/retargeting-shopware-plugin:dev-master** to install the latest unreleased version from github
 
-## Module installation with zip file
+### Module installation with zip file
 
 Alternative you can install with uploading 'RelevanzRetargeting.zip' in Shopware-6-Backend.  
 Just go to Shopware-6-Backend: Settings => System => Plugins and upload RelevaRetargeting.zip from root-folder of releva.nz plugin.
@@ -27,7 +22,15 @@ Just go to Shopware-6-Backend: Settings => System => Plugins and upload RelevaRe
 The zip file could be created with  
 **sh ./build.sh**
 
-## Module installation with sources
+### Module installation with sources
 
 Copy src folder to custom/plugins/RelevaRetargeting of your shopware installation. Got to this folder and run composer install.  
 Go to Shopware-6-Backend: Settings => System => Plugins and install plugin.
+
+## Support
+For technical questions please contact our tec (tec@releva.nz) or general support (support@releva.nz)
+
+## License
+The releva.nz plugin is licensed under the MIT License
+
+Copyright (c) since 2014 releva GmbH, https://releva.nz
