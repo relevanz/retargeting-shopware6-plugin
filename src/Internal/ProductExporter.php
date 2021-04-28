@@ -35,7 +35,7 @@ class ProductExporter
         $this->container = $container;
     }
     
-    private function getProductCategoryIds (ProductEntity $product, SalesChannelEntity $salesChannel):array
+    private function getProductCategoryIds (SalesChannelEntity $salesChannel, ProductEntity $product, ProductEntity $parentProduct = null):array
     {
         if (!array_key_exists($salesChannel->getId(), $this->salesChannelCategories)) {
             $this->salesChannelCategories[$salesChannel->getId()] = [];
@@ -50,22 +50,41 @@ class ProductExporter
             }
         }
         $productCategoryIds = [];
-        foreach ($product->getCategories() as $productCategory) {
-            $categoryIds = array_filter(explode('|', $productCategory->getPath().'|'.$productCategory->getId()));
-            if (array_intersect($categoryIds, $this->salesChannelCategories[$salesChannel->getId()])){
-                $productCategoryIds[] = $productCategory->getId();
+        $categories = $product->getCategories();
+        if ($categories === null && $parentProduct !== null) {
+            $categories = $parentProduct->getCategories();
+        }
+        if ($categories !== null) {
+            foreach ($categories as $productCategory) {
+                $categoryIds = array_filter(explode('|', $productCategory->getPath().'|'.$productCategory->getId()));
+                if (array_intersect($categoryIds, $this->salesChannelCategories[$salesChannel->getId()])){
+                    $productCategoryIds[] = $productCategory->getId();
+                }
             }
         }
         return $productCategoryIds;
     }
     
-    private function translate(ProductEntity $product, string $method):string
+    private function translate(string $method, ProductEntity $product, ProductEntity $parentProduct = null):string
     {
         if (!($out = $product->{$method}())) {
             if (!array_key_exists($product->getId(), $this->productTranslations)) {
-                $this->productTranslations[$product->getId()] = $product->getTranslations()->get($product->getId().'-'.Defaults::LANGUAGE_SYSTEM);
+                $translations = $product->getTranslations();
+                if ($translations !== null) {
+                    $productId = $product->getId();
+                } elseif ($parentProduct !== null) {
+                    $translations = $parentProduct->getTranslations();
+                    $productId = $parentProduct->getId();
+                }
+                if ($translations === null) {
+                    $this->productTranslations[$product->getId()] = null;
+                } else {
+                    $this->productTranslations[$product->getId()] = $translations->get($productId.'-'.Defaults::LANGUAGE_SYSTEM);
+                }
             }
-            $out = $this->productTranslations[$product->getId()]->{$method}();
+            if ($this->productTranslations[$product->getId()] !== null) {
+                $out = $this->productTranslations[$product->getId()]->{$method}();
+            }
         }
         return (string) $out;
     }
@@ -73,53 +92,72 @@ class ProductExporter
     public function export(SalesChannelContext $salesChannelContext, string $format, int $limit = null, int $offset = null): ExporterInterface
     {
         $context = $salesChannelContext->getContext();
-        $productsSearchResult = $this->container->get(RepositoryHelper::class)->getProducts($context, ['categories', 'translations', 'seoUrls'], [RepositoryHelper::FILTER_PRODUCT_AVAILABLE, ], $limit, $offset);
+        $productsSearchResult = $this->container->get(RepositoryHelper::class)->getProducts($context, ['categories', 'translations', 'seoUrls', 'children', ], [RepositoryHelper::FILTER_PRODUCT_AVAILABLE, RepositoryHelper::FILTER_PRODUCT_MAIN, ], $limit, $offset);
         if ($productsSearchResult->getTotal() === 0) {
             throw new RelevanzException("No products found.", 1585554289);
         }
         $exporter = $format === 'json' ? new ProductJsonExporter() : new ProductCsvExporter();
         foreach ($productsSearchResult as $product) {
             /* @var $product ProductEntity */
-            $exporter->addItem($this->getProductExportItem($product, $salesChannelContext));
+            $exportItem = $this->getProductExportItem($salesChannelContext, $product);
+            if ($exportItem !== null) {
+                $exporter->addItem($exportItem);
+            }
+            foreach ($product->getChildren() as $children) {
+                $exportItem = $this->getProductExportItem($salesChannelContext, $children, $product);
+                if ($exportItem !== null) {
+                    $exporter->addItem($exportItem);
+                }
+            }
         }
         return $exporter;
     }
     
-    private function getProductExportItem (ProductEntity $product, SalesChannelContext $salesChannelContext) {
+    private function getProductExportItem (SalesChannelContext $salesChannelContext, ProductEntity $product, ProductEntity $parentProduct = null) :? ProductExportItem {
         /* @var $cartService CartService */
         $domain = $salesChannelContext->getSalesChannel()->getDomains()->filterByProperty('languageId', $salesChannelContext->getContext()->getLanguageId())->first();
         // create cart and fill with one product to get calculated price
         $cartService = $this->container->get(CartService::class);
         $lineItem = (new ProductLineItemFactory())->create($product->getId());
         $cartService->add($cartService->createNew('releva'), $lineItem, $salesChannelContext);
-        $price = $priceOffer = $lineItem->getPrice()->getTotalPrice();
-        foreach ($cartService->getCart('releva', $salesChannelContext)->getLineItems()->fmap(function (LineItem $lineItem) {
-            return $lineItem->getType() === 'promotion' ? $lineItem : false;
-        }) as $promotionLineItem) {
-            $priceOffer += $promotionLineItem->getPrice()->getTotalPrice();//promotion has negative price
+        if ($lineItem->getPrice() === null) {
+            return null;
+        } else {
+            $price = $priceOffer = $lineItem->getPrice()->getTotalPrice();
+            foreach ($cartService->getCart('releva', $salesChannelContext)->getLineItems()->fmap(function (LineItem $lineItem) {
+                return $lineItem->getType() === 'promotion' ? $lineItem : false;
+            }) as $promotionLineItem) {
+                $priceOffer += $promotionLineItem->getPrice()->getTotalPrice();//promotion has negative price
+            }
         }
         return new ProductExportItem(
             (string) $product->getId(),
-            (array) $this->getProductCategoryIds($product, $salesChannelContext->getSalesChannel()),
-            (string) $this->translate($product, 'getName'),
-            (string) $this->translate($product, 'getMetaDescription'),
-            (string) $this->translate($product, 'getDescription'),
+            (array) $this->getProductCategoryIds($salesChannelContext->getSalesChannel(), $product),
+            (string) $this->translate('getName', $product, $parentProduct),
+            (string) $this->translate('getMetaDescription', $product, $parentProduct),
+            (string) $this->translate('getDescription', $product, $parentProduct),
             (float) $price,
             (float) $priceOffer,
-            (string) $this->getProductUrl($product, $domain->getUrl()),
+            (string) $this->getProductUrl($domain->getUrl(), $product, $parentProduct),
             (string) $lineItem->getCover()->getUrl()
          );
     }
     
-    private function getProductUrl(ProductEntity $product, $shopUrl): string
+    private function getProductUrl($shopUrl, ProductEntity $product, ProductEntity $parentProduct = null): string
     {
         $url = null;
-        foreach ($product->getSeoUrls() as $seoUrl) {
-            $seoPathInfo = $seoUrl->getSeoPathInfo();
-            if ($seoPathInfo !== '') {
-                $url = $seoPathInfo;
-                if ($seoUrl->getIsCanonical()) {
-                    break;
+        $seoUrls = $product->getSeoUrls();
+        if ($seoUrls === null && $parentProduct !== null) {
+            $seoUrls = $parentProduct->getSeoUrls();
+        }
+        if ($seoUrls !== null) {
+            foreach ($seoUrls as $seoUrl) {
+                $seoPathInfo = $seoUrl->getSeoPathInfo();
+                if ($seoPathInfo !== '') {
+                    $url = $seoPathInfo;
+                    if ($seoUrl->getIsCanonical()) {
+                        break;
+                    }
                 }
             }
         }

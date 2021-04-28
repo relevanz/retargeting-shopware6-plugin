@@ -25,6 +25,11 @@ class RepositoryHelper
     const FILTER_PRODUCT_AVAILABLE = 'filter-product-available';
     
     /**
+     * filter: only available-products
+     */
+    const FILTER_PRODUCT_MAIN = 'filter-product-main';
+    
+    /**
      * filter: only storefront salseschannels
      */
     const FILTER_SALESCHANNEL_STOREFRONT = 'filter-saleschannel-storefront';
@@ -39,7 +44,7 @@ class RepositoryHelper
         if (($key = array_search(self::FILTER_SALESCHANNEL_STOREFRONT, $filters)) !== false) {
             $filters[$key] = new EqualsFilter('typeId', Defaults::SALES_CHANNEL_TYPE_STOREFRONT);
         }
-        return $this->handleRepository($this->container->get('sales_channel.repository'), $context, null, null, $autoloads, ...$filters);
+        return $this->handleRepository($this->container->get('sales_channel.repository'), $context, null, null, $autoloads, $filters);
     }
     
     public function getProducts (Context $context, array $autoloads = [], array $filters = [], int $limit = null, int $offset = null): EntitySearchResult
@@ -47,10 +52,13 @@ class RepositoryHelper
         if (($key = array_search(self::FILTER_PRODUCT_AVAILABLE, $filters)) !== false) {
             $filters[$key] = new ProductAvailableFilter($context->getSource()->getSalesChannelId(), ProductVisibilityDefinition::VISIBILITY_SEARCH);
         }
-        return $this->handleRepository($this->container->get('product.repository'), $context, $limit, $offset, $autoloads, ...$filters);
+        if (($key = array_search(self::FILTER_PRODUCT_MAIN, $filters)) !== false) {
+            $filters[$key] = new EqualsFilter('product.parentId', null);
+        }
+        return $this->handleRepository($this->container->get('product.repository'), $context, $limit, $offset, $autoloads, $filters);
     }
     
-    private function handleRepository (EntityRepositoryInterface $repository, Context $context, int $limit = null, int $offset = null, $autoloads = [], Filter ...$filters): EntitySearchResult
+    private function handleRepository (EntityRepositoryInterface $repository, Context $context, int $limit = null, int $offset = null, $autoloads = [], array $filters): EntitySearchResult
     {
         $criteria = (new Criteria())->setLimit($limit)->setOffset($offset);
         foreach ($autoloads as $autoload) {

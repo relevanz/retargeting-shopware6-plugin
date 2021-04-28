@@ -14,6 +14,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -59,9 +60,9 @@ class StorefrontController extends ShopwareStorefrontController
     /**
      * @Route("/releva/retargeting/products", name="frontend.releva.retargeting.products", options={"seo"="false"}, methods={"GET"})
      */
-    public function productsAction(Request $request, SalesChannelContext $salesChannelContext) : JsonResponse
+    public function productsAction(Request $request, SalesChannelContext $salesChannelContext) : Response
     {
-        $response = new JsonResponse;
+        $response = new Response;
         if (!$this->checkCredentials($request, $salesChannelContext)) {
             $response->setStatusCode(401)->setContent('');
             return $response;
@@ -76,7 +77,7 @@ class StorefrontController extends ShopwareStorefrontController
                     $page === null ? null : $page * self::ITEMS_PER_PAGE
                 );
                 foreach ($exporter->getHttpHeaders() as $headerKey => $headerValue) {
-                    header(sprintf('%s:%s', $headerKey, $headerValue));
+                   $response->headers->set($headerKey, $headerValue);
                 }
                 $response->setContent($exporter->getContents());
             } catch (\Exception $exception) {
