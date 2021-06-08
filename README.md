@@ -11,8 +11,8 @@ Instructions for tech-savvy people:
 
 In order to install the module via composer run one of the following commands in commandline in your shop base directory 
 (where the shop's composer.json file resides).
-* **composer require relevanz/retargeting-shopware-plugin** to install the released version compatible with Shopware eShop Compilation 6.*
-* **composer require relevanz/retargeting-shopware-plugin:dev-master** to install the latest unreleased version from github
+* **composer require relevanz/retargeting-shopware6-plugin** to install the released version compatible with Shopware eShop Compilation 6.*
+* **composer require relevanz/retargeting-shopware6-plugin:dev-master** to install the latest unreleased version from github
 
 ### Module installation with zip file
 
