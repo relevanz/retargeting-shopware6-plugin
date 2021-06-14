@@ -8,7 +8,7 @@
                     size="big" 
                     labelProperty="salesChannel"
                     valueProperty="iframeUrl"
-                    @input="onSalesChannelsToIframeUrlSelectionChange"
+                    @change="onSalesChannelsToIframeUrlSelectionChange"
                     :value="currentIframeUrl"
                     :options="salesChannelsToIframeUrl"
                     :placeholder="$tc('releva-retargeting.config.relevaSalesChannelSwitch.label')"
