@@ -36,7 +36,7 @@ class ApiController extends AbstractController
         /* @var $systemConfigService SystemConfigService */
         $systemConfigService = $this->get(SystemConfigService::class);
         /* @var $salesChannelsRepository EntityRepository */
-        $allSalesChannels = $this->get(RepositoryHelper::class)->getSalesChannels($context, ['domains', ], [RepositoryHelper::FILTER_SALESCHANNEL_STOREFRONT, ]);
+        $allSalesChannels = $this->get(RepositoryHelper::class)->getSalesChannels($context, ['domains', ]);
         $salesChannels = $notifications = [];
         foreach ($allSalesChannels as $salesChannelEntity) {
             /* @var $salesChannelEntity SalesChannelEntity */
@@ -77,7 +77,6 @@ class ApiController extends AbstractController
     {
         /* @var $salesChannelEntity SalesChannelEntity */
         $salesChannelEntity = $this->get(RepositoryHelper::class)->getSalesChannels($context, ['domains', ], [
-            RepositoryHelper::FILTER_SALESCHANNEL_STOREFRONT, 
             new EqualsFilter('id', $request->get('config')['salesChannel']),
         ])->first();
         $data = ['userId' => null, ];
