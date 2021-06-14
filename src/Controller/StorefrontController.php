@@ -43,9 +43,9 @@ class StorefrontController extends ShopwareStorefrontController
                 'shop' => ['system' => $shopInfo->getShopSystem(), 'version' => $shopInfo->getShopVersion(), ],
                 'environment' => $shopInfo->getServerEnvironment(),
                 'callbacks' => [
-                    'callback' => ['url' => $request->getSchemeAndHttpHost().$shopInfo->getUrlCallback(), 'parameters' => [], ],
+                    'callback' => ['url' => $request->getUriForPath($shopInfo->getUrlCallback()), 'parameters' => [], ],
                     'export' => [
-                        'url' => $request->getSchemeAndHttpHost().$shopInfo->getUrlProductExport(),
+                        'url' => $request->getUriForPath($shopInfo->getUrlProductExport()),
                         'parameters' => [
                             'format' => ['values' => ['csv', 'json'], 'default' => 'csv', 'optional' => true, ],
                             'page' => ['type' => 'integer', 'optional' => true, 'info' => ['items-per-page' => self::ITEMS_PER_PAGE, ], ],

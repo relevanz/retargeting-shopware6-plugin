@@ -29,7 +29,7 @@ class ApiController extends AbstractController
 {
     
     /**
-     * @Route("/api/v{version}/releva/retargeting/getInvolvedSalesChannelsToIframeUrls", name="api.action.releva.retargeting.getinvolvedsaleschannelstoiframeurls", methods={"POST"})
+     * @Route("/api/releva/retargeting/getInvolvedSalesChannelsToIframeUrls", name="api.action.releva.retargeting.getinvolvedsaleschannelstoiframeurls", methods={"POST"})
      */
     public function getInvolvedSalesChannelsToIframeUrlsAction(Context $context): JsonResponse
     {
@@ -71,7 +71,7 @@ class ApiController extends AbstractController
     }
     
     /**
-     * @Route("/api/v{version}/releva/retargeting/getVerifyApiKey", name="api.action.releva.retargeting.getverifyapikey", methods={"POST"})
+     * @Route("/api/releva/retargeting/getVerifyApiKey", name="api.action.releva.retargeting.getverifyapikey", methods={"POST"})
      */
     public function getVerifyApiKeyAction(Request $request, Context $context): JsonResponse
     {

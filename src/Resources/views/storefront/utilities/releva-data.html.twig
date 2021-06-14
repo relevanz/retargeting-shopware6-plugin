@@ -1,4 +1,4 @@
-{% if shopware.config.RelevaRetargeting.config.trackingActive and page.footer.extensions.releva.user_id %}
+{% if page.footer.extensions.releva.tracking_active and page.footer.extensions.releva.user_id %}
     {% if page.order is defined and page.order != null %}
         {% set productIds = [] %}
         {% for orderItem in page.order.lineItems %}

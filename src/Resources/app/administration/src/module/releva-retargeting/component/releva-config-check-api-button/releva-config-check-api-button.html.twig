@@ -1,24 +1,29 @@
 {% block sw_text_field %}
     {% block releva_config_check_api_button %}
-        <sw-contextual-field v-bind="$attrs" :name="formFieldName">
-            <template #sw-field-input="{identification, error, disabled, size, setFocusClass, removeFocusClass }">
-                <input
-                    :name="identification"
-                    :id="identification"
-                    :value="currentValue"
-                    :placeholder="placeholder"
-                    :disabled="disabled"
-                    @input="onInput"
-                    @change="onChange"
-                    @focus="setFocusClass"
-                    @blur="removeFocusClass">
-            </template>
-            <template #sw-contextual-field-suffix="{ disabled }">
-                <span @click="changeMode(disabled)" class="releva-config-check-api-button-button">
-                    <span v-if="buttonText" class="releva-config-check-api-button-button-text">{{buttonText}}</span>
-                    <sw-icon v-if="buttonIcon" class="releva-config-check-api-button-button-icon" :color="buttonIcon.color" :name="buttonIcon.name" :small="true"></sw-icon>
-                </span>
-            </template>
-        </sw-contextual-field>
+        <template v-if="salesChannel">
+            <sw-contextual-field v-bind="$attrs" :name="formFieldName">
+                <template #sw-field-input="{identification, error, disabled, size, setFocusClass, removeFocusClass }">
+                    <input
+                        :name="identification"
+                        :id="identification"
+                        :value="currentValue"
+                        :placeholder="placeholder"
+                        :disabled="disabled"
+                        @input="onInput"
+                        @change="onChange"
+                        @focus="setFocusClass"
+                        @blur="removeFocusClass">
+                </template>
+                <template #sw-contextual-field-suffix="{ disabled }">
+                    <span @click="changeMode(disabled)" class="releva-config-check-api-button-button">
+                        <span v-if="buttonText" class="releva-config-check-api-button-button-text">{{buttonText}}</span>
+                        <sw-icon v-if="buttonIcon" class="releva-config-check-api-button-button-icon" :color="buttonIcon.color" :name="buttonIcon.name" :small="true"></sw-icon>
+                    </span>
+                </template>
+            </sw-contextual-field>
+        </template>
+        <template v-else>
+            {{ scopeMessage }}
+        </template>
     {% endblock %}
 {% endblock %}

@@ -1,0 +1,22 @@
+{% block sw_system_config_content_card_field %}
+    <template v-if="isDefaultSalesChannelOrGlobalScope(element)">
+        {% parent() %}
+    </template>
+    <template v-else>
+        <sw-inherit-wrapper v-model="actualConfigData[currentSalesChannelId][element.name]"
+                            v-bind="getInheritWrapperBind(element)"
+                            :hasParent="false"
+                            :inheritedValue="getInheritedValue(element)"
+                            :class="'sw-system-config--field-' + kebabCase(getElementBind(element).name)">
+            <template #content="props">
+                <sw-form-field-renderer v-bind="getElementBind(element, props)"
+                                        :disabled="props.isInherited"
+                                        :value="props.currentValue"
+                                        :key="props.isInheritField + props.isInherited"
+                                        @input="props.updateCurrentValue"
+                                        @change="props.updateCurrentValue">
+                </sw-form-field-renderer>
+            </template>
+        </sw-inherit-wrapper>
+    </template>
+{% endblock %}

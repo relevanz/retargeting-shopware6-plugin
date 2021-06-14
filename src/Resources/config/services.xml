@@ -7,6 +7,18 @@
             <factory service="Shopware\Core\Framework\Log\LoggerFactory" method="createRotating"/>
             <argument type="string">releva_retargeting</argument>
         </service>
+        <service id="Releva\Retargeting\Shopware\Controller\ApiController">
+            <tag name="controller.service_arguments"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+        <service id="Releva\Retargeting\Shopware\Controller\StorefrontController">
+            <tag name="controller.service_arguments"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
         <service id="Releva\Retargeting\Shopware\Internal\MessagesBridge" public="true">
             <argument type="service" id="service_container"/>
             <argument type="service" id="releva_retargeting.logger"/>

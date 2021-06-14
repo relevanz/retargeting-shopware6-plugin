@@ -1,1 +1,1 @@
-import './sw-plugin-config';
+import './sw-system-config';

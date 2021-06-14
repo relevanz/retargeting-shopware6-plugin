@@ -28,6 +28,7 @@ class StoreFrontSubscriber implements EventSubscriberInterface
     public function addRelevaUrls(FooterPageletLoadedEvent $event): void
     {
         $event->getPagelet()->addExtension('releva', new ArrayEntity([
+            'tracking_active' => $this->systemConfigService->get('RelevaRetargeting.config.trackingActive', $event->getSalesChannelContext()->getSalesChannel()->getId()),
             'tracker_url' => RelevanzApi::RELEVANZ_TRACKER_URL,
             'conv_url' => RelevanzApi::RELEVANZ_CONV_URL,
             'user_id' => $this->systemConfigService->get('RelevaRetargeting.config.relevanzUserId', $event->getSalesChannelContext()->getSalesChannel()->getId()),

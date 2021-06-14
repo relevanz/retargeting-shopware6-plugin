@@ -7,9 +7,9 @@
             <name>relevanzApiKey</name>
             <label>API-Key</label>
             <label lang="de-DE">API Schlüssel</label>
-            <scopeErrorMessage>Api Key is only configurable with selected Storefront-sales-channel.</scopeErrorMessage>
-            <scopeErrorMessage lang="de-DE">Api Key ist nur mit ausgewählten Storefront-Verkaufskanal konfigurierbar.</scopeErrorMessage>
-            <scope>storefront</scope>
+            <scopeMessage>Api Key is only configurable with selected sales-channel.</scopeMessage>
+            <scopeMessage lang="de-DE">Api Schlüssel ist nur mit ausgewählten Verkaufskanal konfigurierbar.</scopeMessage>
+            <!--<scope>storefront</scope>-->
         </component>
         <!--
             cannot use input-field after component-node

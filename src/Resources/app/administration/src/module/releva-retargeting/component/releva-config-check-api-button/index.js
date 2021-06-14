@@ -23,7 +23,18 @@ Component.extend('releva-config-check-api-button', 'sw-text-field', {
                 var title = "releva-retargeting" + self.$attrs.name.substr(self.$attrs.name.indexOf('.')) + ".button";
                 var translated = self.$tc(title);
                 return title === translated ? false : translated;
-            }(this)
+            }(this),
+            salesChannel: function(self) {
+                var current = self;
+                while (typeof current.$parent !== "undefined") {
+                    current = current.$parent;
+                    if (typeof current.currentSalesChannelId !=="undefined") {
+                        return current.currentSalesChannelId;
+                    }
+                }
+                return '';
+            }(this),
+            scopeMessage: this.$attrs.scopeMessage,
         };
     },
     

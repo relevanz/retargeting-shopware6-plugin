@@ -74,7 +74,7 @@ class ShopInfo extends AbstractShopInfo
         return 
             self::$container === null
             ? null
-            : self::$container->get('router')->getRouteCollection()->get('frontend.releva.retargeting.callback')->getPath().'?auth=:auth'
+            : self::$container->get('router')->getRouteCollection()->get('frontend.releva.retargeting.callback')->getPath()
         ;
     }
     
@@ -83,7 +83,7 @@ class ShopInfo extends AbstractShopInfo
         return
             self::$container === null
             ? null
-            : self::$container->get('router')->getRouteCollection()->get('frontend.releva.retargeting.products')->getPath().'?auth=:auth'
+            : self::$container->get('router')->getRouteCollection()->get('frontend.releva.retargeting.products')->getPath()
         ;
     }
     
