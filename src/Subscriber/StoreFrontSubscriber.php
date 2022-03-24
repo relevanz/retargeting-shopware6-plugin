@@ -32,6 +32,7 @@ class StoreFrontSubscriber implements EventSubscriberInterface
             'tracker_url' => RelevanzApi::RELEVANZ_TRACKER_URL,
             'conv_url' => RelevanzApi::RELEVANZ_CONV_URL,
             'user_id' => $this->systemConfigService->get('RelevaRetargeting.config.relevanzUserId', $event->getSalesChannelContext()->getSalesChannel()->getId()),
+            'additional_html' => $this->systemConfigService->get('RelevaRetargeting.config.additionalHtml', $event->getSalesChannelContext()->getSalesChannel()->getId()),
         ]));
     }
     

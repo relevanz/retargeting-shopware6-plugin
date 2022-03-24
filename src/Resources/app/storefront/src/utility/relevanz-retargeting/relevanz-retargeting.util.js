@@ -15,21 +15,7 @@ export default class RelevanzRetargetingUtil {
         var value = '; ' + document.cookie;
         var parts = value.split('; relevanzRetargeting=');
         if (parts.length == 2 && parts.pop().split(';').shift() === 'allow') {// cookie setted
-            var elementInterval = window.setInterval(function () {
-                var element = document.querySelector('#relevanzRetargetingConfig');
-                if (element !== null) {
-                    window.clearInterval(elementInterval);
-                    if (typeof element.getAttribute('data-src') === 'string') {
-                        var script = document.createElement('script');
-                        script.type = 'text/javascript';
-                        script.src = element.getAttribute('data-src');
-                        if (element.getAttribute('data-async') === 'async') {
-                            script.async = true;
-                        }
-                        document.body.appendChild(script);
-                    }
-                }
-            }, 300);
+            window.relevanzRetargetingForcePixel = true;
         }
     }
 
