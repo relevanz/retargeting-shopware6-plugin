@@ -17,6 +17,9 @@
         {% set src = page.footer.extensions.releva.tracker_url ~ '?t=d&action=s&cid=' ~ page.footer.extensions.releva.user_id %}
         {% set asnc = true %}
     {% endif %}
+    {% if context.customer and not context.customer.guest %}
+        {% set src = src ~ '&custid=' ~ context.customer.id %}
+    {% endif %}
     <script type="text/javascript">
         var relevanzRetargetingForcePixelInterval = window.setInterval(function () {
             if (typeof relevanzRetargetingForcePixel !== "undefined" && relevanzRetargetingForcePixel === true) {
