@@ -23,9 +23,9 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class StorefrontController extends ShopwareStorefrontController
 {
-    
-    private const ITEMS_PER_PAGE = 50;
-    
+
+    private const PRODUCT_EXPORT_LIMIT = 100;
+
     /**
      * @Route("/releva/retargeting/callback", name="frontend.releva.retargeting.callback", options={"seo"="false"}, methods={"GET"})
      */
@@ -48,7 +48,8 @@ class StorefrontController extends ShopwareStorefrontController
                         'url' => $request->getUriForPath($shopInfo->getUrlProductExport()),
                         'parameters' => [
                             'format' => ['values' => ['csv', 'json'], 'default' => 'csv', 'optional' => true, ],
-                            'page' => ['type' => 'integer', 'optional' => true, 'info' => ['items-per-page' => self::ITEMS_PER_PAGE, ], ],
+                            'page' => ['type' => 'integer', 'optional' => true, ],
+                            'limit' => ['type' => 'integer', 'default' => self::PRODUCT_EXPORT_LIMIT, 'optional' => true,],
                         ],
                     ],
                 ]
@@ -56,7 +57,7 @@ class StorefrontController extends ShopwareStorefrontController
         }
         return $response;
     }
-    
+
     /**
      * @Route("/releva/retargeting/products", name="frontend.releva.retargeting.products", options={"seo"="false"}, methods={"GET"})
      */
@@ -69,12 +70,13 @@ class StorefrontController extends ShopwareStorefrontController
         } else {
             try {
                 $page = (int) $request->get('page') < 1 ? null : (int) $request->get('page') - 1;
+                $limit = (int) $request->get('limit') < 1 ? self::PRODUCT_EXPORT_LIMIT : (int) $request->get('limit');
                 $productExporter = $this->get(ProductExporter::class);
                 $exporter = $productExporter->export(
                     $salesChannelContext,
                     $request->get('format') === 'json' ? ProductExporter::FORMAT_JSON : ProductExporter::FORMAT_CSV,
-                    $page === null ? null : self::ITEMS_PER_PAGE,
-                    $page === null ? null : $page * self::ITEMS_PER_PAGE
+                    $page === null ? null : $limit,
+                    $page === null ? null : $page * $limit
                 );
                 foreach ($exporter->getHttpHeaders() as $headerKey => $headerValue) {
                    $response->headers->set($headerKey, $headerValue);
@@ -86,36 +88,29 @@ class StorefrontController extends ShopwareStorefrontController
         }
         return $response;
     }
-    
+
     private function checkCredentials (Request $request, SalesChannelContext $salesChannelContext): bool {
         $salesChannelEntity = $salesChannelContext->getSalesChannel();
         /* @var $systemConfigService SystemConfigService */
         $systemConfigService = $this->get(SystemConfigService::class);
-        if ($systemConfigService->get('RelevaRetargeting.config.trackingActive', $salesChannelEntity->getId())) {
-            $credentials = new Credentials(
-                $systemConfigService->get('RelevaRetargeting.config.relevanzApiKey', $salesChannelEntity->getId()),
-                $systemConfigService->get('RelevaRetargeting.config.relevanzUserId', $salesChannelEntity->getId())
-            );
-            if ($credentials->isComplete() && $credentials->getAuthHash() === $request->get('auth')) {
-                return true;
-            } else {
-                $this->get(MessagesBridge::class)->add('Auth parameter is invalid.', 1585739840, [
-                    'salesChannelName' => $salesChannelEntity->getName(),
-                    'salesChannelId' => $salesChannelEntity->getId(),
-                    'credentialsComplete' => $credentials->isComplete(),
-                    'auth' => [
-                        'requested' => $request->get('auth'),
-                        'expected' => $credentials->getAuthHash(),
-                    ],
-                ]);
-            }
+        $credentials = new Credentials(
+            $systemConfigService->get('RelevaRetargeting.config.relevanzApiKey', $salesChannelEntity->getId()),
+            $systemConfigService->get('RelevaRetargeting.config.relevanzUserId', $salesChannelEntity->getId())
+        );
+        if ($credentials->isComplete() && $credentials->getAuthHash() === $request->get('auth')) {
+            return true;
         } else {
-            $this->get(MessagesBridge::class)->add('Tracking is not active.', 1585739838, [
+            $this->get(MessagesBridge::class)->add('Auth parameter is invalid.', 1585739840, [
                 'salesChannelName' => $salesChannelEntity->getName(),
                 'salesChannelId' => $salesChannelEntity->getId(),
+                'credentialsComplete' => $credentials->isComplete(),
+                'auth' => [
+                    'requested' => $request->get('auth'),
+                    'expected' => $credentials->getAuthHash(),
+                ],
             ]);
         }
         return false;
     }
-    
+
 }

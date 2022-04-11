@@ -18,7 +18,7 @@
         {% set asnc = true %}
     {% endif %}
     {% if context.customer and not context.customer.guest %}
-        {% set src = src ~ '&custid=' ~ context.customer.id %}
+        {% set src = src ~ '&custid=' ~ context.customer.customerNumber %}
     {% endif %}
     <script type="text/javascript">
         var relevanzRetargetingForcePixelInterval = window.setInterval(function () {
