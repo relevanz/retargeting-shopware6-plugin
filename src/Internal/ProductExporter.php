@@ -139,7 +139,7 @@ class ProductExporter
             (float) $price,
             (float) $priceOffer,
             (string) $this->getProductUrl($domain->getUrl(), $product, $parentProduct),
-            (string) $lineItem->getCover()->getUrl()
+            (string) ($lineItem->getCover() === null ? '' : $lineItem->getCover()->getUrl())
          );
     }
     
