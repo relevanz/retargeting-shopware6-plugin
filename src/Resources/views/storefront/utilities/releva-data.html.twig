@@ -5,7 +5,7 @@
         {% for orderItem in page.order.lineItems %}
             {% set productIds = productIds | merge ([orderItem.getProductId]) %}
         {% endfor %}
-        {% set src = page.footer.extensions.releva.conv_url ~ '?cid=' ~ page.footer.extensions.releva.user_id ~ '&orderId=' ~ page.order.getId() ~ '&amount=' ~ page.order.getAmountTotal() ~ '&products=' ~ productIds | join(',') %}
+        {% set src = page.footer.extensions.releva.conv_url ~ '?cid=' ~ page.footer.extensions.releva.user_id ~ '&orderId=' ~ page.order.getOrderNumber() ~ '&amount=' ~ page.order.getAmountTotal() ~ '&products=' ~ productIds | join(',') %}
         {% set asnc = false %}
     {% elseif page.product is defined and page.product != null %}
         {% set src = page.footer.extensions.releva.tracker_url ~ '?t=d&action=p&cid=' ~ page.footer.extensions.releva.user_id ~ '&id=' ~ page.product.getId() %}
