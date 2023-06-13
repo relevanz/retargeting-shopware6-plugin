@@ -8,7 +8,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -58,7 +58,7 @@ class RepositoryHelper
         return $this->handleRepository($this->container->get('product.repository'), $context, $limit, $offset, $autoloads, $filters);
     }
     
-    private function handleRepository (EntityRepositoryInterface $repository, Context $context, int $limit = null, int $offset = null, $autoloads = [], array $filters): EntitySearchResult
+    private function handleRepository (EntityRepository $repository, Context $context, int $limit = null, int $offset = null, $autoloads = [], array $filters = []): EntitySearchResult
     {
         $criteria = (new Criteria())->setLimit($limit)->setOffset($offset);
         foreach ($autoloads as $autoload) {

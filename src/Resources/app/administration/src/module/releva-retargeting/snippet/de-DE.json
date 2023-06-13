@@ -22,11 +22,11 @@
             },
             "1579084006": {
                 "title": "Es wurde kein Verkaufskanal für das releva.nz Plugin konfiguriert.",
-                "message": "Noch nicht registriert? <a href=\"https://releva.nz\" target=\"blank\">Jetzt nachholen.</a> Bereits registriert? <a href=\"#/sw/plugin/settings/RelevaRetargeting\">Konfiguriere Plugin hier.</a>"
+                "message": "Noch nicht registriert? <a href=\"https://releva.nz\" target=\"blank\">Jetzt nachholen.</a> Bereits registriert? <a href=\"#/sw/extension/config/RelevaRetargeting\">Konfiguriere Plugin hier.</a>"
             },
             "1553935786": {
                 "title": "Ihr API Key für releva.nz und Verkaufskanal \"{salesChannelName}\" ist fehlerhaft.",
-                "message": "<a href=\"#/sw/plugin/settings/RelevaRetargeting\">Konfiguriere Plugin hier.</a>"
+                "message": "<a href=\"#/sw/extension/config/RelevaRetargeting\">Konfiguriere Plugin hier.</a>"
             },
             "1553935569": {
                 "title": "@:(releva-retargeting.messages.1553935786.title)",

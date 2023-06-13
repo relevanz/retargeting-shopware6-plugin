@@ -8,7 +8,7 @@ use Releva\Retargeting\Shopware\Internal\MessagesBridge;
 use Releva\Retargeting\Shopware\Internal\ProductExporter;
 use Releva\Retargeting\Shopware\Internal\ShopInfo;
 
-use Shopware\Core\Framework\Routing\Annotation\RouteScope; // need for anotations
+//use Shopware\Core\Framework\Routing\Annotation\RouteScope; // need for anotations
 use Shopware\Storefront\Controller\StorefrontController as ShopwareStorefrontController;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -19,7 +19,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"storefront"})
+ * @ RouteScope(scopes={"storefront"})
+ * @Route(defaults={"_routeScope"={"storefront"}})
  */
 class StorefrontController extends ShopwareStorefrontController
 {
@@ -37,7 +38,7 @@ class StorefrontController extends ShopwareStorefrontController
             return $response;
         } else {
             /* @var $shopInfo ShopInfo */
-            $shopInfo = $this->get(ShopInfo::class);
+            $shopInfo = $this->container->get(ShopInfo::class);
             $response->setData([
                 'plugin-version' => $shopInfo->getPluginVersion(),
                 'shop' => ['system' => $shopInfo->getShopSystem(), 'version' => $shopInfo->getShopVersion(), ],
@@ -71,7 +72,7 @@ class StorefrontController extends ShopwareStorefrontController
             try {
                 $page = (int) $request->get('page') < 1 ? null : (int) $request->get('page') - 1;
                 $limit = (int) $request->get('limit') < 1 ? self::PRODUCT_EXPORT_LIMIT : (int) $request->get('limit');
-                $productExporter = $this->get(ProductExporter::class);
+                $productExporter = $this->container->get(ProductExporter::class);
                 $exporter = $productExporter->export(
                     $salesChannelContext,
                     $request->get('format') === 'json' ? ProductExporter::FORMAT_JSON : ProductExporter::FORMAT_CSV,
@@ -92,7 +93,7 @@ class StorefrontController extends ShopwareStorefrontController
     private function checkCredentials (Request $request, SalesChannelContext $salesChannelContext): bool {
         $salesChannelEntity = $salesChannelContext->getSalesChannel();
         /* @var $systemConfigService SystemConfigService */
-        $systemConfigService = $this->get(SystemConfigService::class);
+        $systemConfigService = $this->container->get(SystemConfigService::class);
         $credentials = new Credentials(
             $systemConfigService->get('RelevaRetargeting.config.relevanzApiKey', $salesChannelEntity->getId()),
             $systemConfigService->get('RelevaRetargeting.config.relevanzUserId', $salesChannelEntity->getId())
@@ -100,7 +101,7 @@ class StorefrontController extends ShopwareStorefrontController
         if ($credentials->isComplete() && $credentials->getAuthHash() === $request->get('auth')) {
             return true;
         } else {
-            $this->get(MessagesBridge::class)->add('Auth parameter is invalid.', 1585739840, [
+            $this->container->get(MessagesBridge::class)->add('Auth parameter is invalid.', 1585739840, [
                 'salesChannelName' => $salesChannelEntity->getName(),
                 'salesChannelId' => $salesChannelEntity->getId(),
                 'credentialsComplete' => $credentials->isComplete(),

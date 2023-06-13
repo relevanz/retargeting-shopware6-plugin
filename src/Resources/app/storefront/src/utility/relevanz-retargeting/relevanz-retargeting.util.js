@@ -5,16 +5,14 @@ export default class RelevanzRetargetingUtil {
         this._init();
     }
     _init() {
-        this._includeRelevanzPixel();
+        this._includeRelevanzPixel({detail: ("; " + document.cookie + ";").indexOf("; relevanzRetargeting=allow;") >= 0 ? {relevanzRetargeting: true} : {}});
         this._registerEvents();
     }
     _registerEvents () {
         document.$emitter.subscribe(COOKIE_CONFIGURATION_UPDATE, this._includeRelevanzPixel);
     }
-    _includeRelevanzPixel() {
-        var value = '; ' + document.cookie;
-        var parts = value.split('; relevanzRetargeting=');
-        if (parts.length == 2 && parts.pop().split(';').shift() === 'allow') {// cookie setted
+    _includeRelevanzPixel(updatedCookies) {
+        if (typeof updatedCookies.detail["relevanzRetargeting"] !== "undefined") {
             window.relevanzRetargetingForcePixel = true;
         }
     }
