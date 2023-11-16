@@ -9,7 +9,7 @@ export default class RelevanzRetargetingUtil {
         this._registerEvents();
     }
     _registerEvents () {
-        document.$emitter.subscribe(COOKIE_CONFIGURATION_UPDATE, this._includeRelevanzPixel);
+        document.$emitter.subscribe(typeof COOKIE_CONFIGURATION_UPDATE === "undefined" ? 'CookieConfiguration_Update' : COOKIE_CONFIGURATION_UPDATE, this._includeRelevanzPixel);
     }
     _includeRelevanzPixel(updatedCookies) {
         if (typeof updatedCookies.detail["relevanzRetargeting"] !== "undefined") {
