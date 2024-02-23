@@ -120,24 +120,24 @@ class ProductExporter
         $cartService = $this->container->get(CartService::class);
         $lineItem = (new ProductLineItemFactory())->create($product->getId());
         $cartService->add($cartService->createNew('releva'), $lineItem, $salesChannelContext);
-        if ($lineItem->getPrice() === null) {
-            return null;
-        } else {
-            $price = $priceOffer = $lineItem->getPrice()->getTotalPrice();
-            foreach ($cartService->getCart('releva', $salesChannelContext)->getLineItems()->fmap(function (LineItem $lineItem) {
-                return $lineItem->getType() === 'promotion' ? $lineItem : false;
-            }) as $promotionLineItem) {
-                $priceOffer += $promotionLineItem->getPrice()->getTotalPrice();//promotion has negative price
-            }
+        $cartPrice = 0;
+        $productPrice = null;
+        foreach ($cartService->getCart('releva', $salesChannelContext)->getLineItems() as $cartLineItem) {
+            $productPrice = $cartLineItem->getType() === 'product' ? $cartLineItem->getPrice()->getTotalPrice() : $productPrice;
+            $cartPrice += $cartLineItem->getPrice()->getTotalPrice();//promotion has negative price
         }
+        if ($productPrice === null) {
+            return null;
+        }
+        
         return new ProductExportItem(
             (string) $product->getId(),
             (array) $this->getProductCategoryIds($salesChannelContext->getSalesChannel(), $product),
             (string) $this->translate('getName', $product, $parentProduct),
             (string) $this->translate('getMetaDescription', $product, $parentProduct),
             (string) $this->translate('getDescription', $product, $parentProduct),
-            (float) $price,
-            (float) $priceOffer,
+            (float) $productPrice,
+            (float) $cartPrice,
             (string) $this->getProductUrl($domain->getUrl(), $product, $parentProduct),
             (string) ($lineItem->getCover() === null ? '' : $lineItem->getCover()->getUrl())
          );
