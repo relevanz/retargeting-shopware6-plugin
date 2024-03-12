@@ -12,7 +12,7 @@ use Releva\Retargeting\Shopware\Internal\RepositoryHelper;
 use Psr\Container\ContainerInterface;
 
 use Shopware\Core\Defaults;
-use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Content\Product\Cart\ProductLineItemFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -30,6 +30,8 @@ class ProductExporter
     private $salesChannelCategories = [];
     
     private $productTranslations = [];
+    
+    private $domains = [];
 
     public function __construct(ContainerInterface $container) {
         $this->container = $container;
@@ -89,7 +91,7 @@ class ProductExporter
         return (string) $out;
     }
     
-    public function export(SalesChannelContext $salesChannelContext, string $format, int $limit = null, int $offset = null): ExporterInterface
+    public function export(SalesChannelContext $salesChannelContext, bool $includeVariants, bool $useSeoUrls, string $format, int $limit = null, int $offset = null): ExporterInterface
     {
         $context = $salesChannelContext->getContext();
         $productsSearchResult = $this->container->get(RepositoryHelper::class)->getProducts($context, ['categories', 'translations', 'seoUrls', 'children', ], [RepositoryHelper::FILTER_PRODUCT_AVAILABLE, RepositoryHelper::FILTER_PRODUCT_MAIN, ], $limit, $offset);
@@ -99,12 +101,12 @@ class ProductExporter
         $exporter = $format === 'json' ? new ProductJsonExporter() : new ProductCsvExporter();
         foreach ($productsSearchResult as $product) {
             /* @var $product ProductEntity */
-            $exportItem = $this->getProductExportItem($salesChannelContext, $product);
+            $exportItem = $this->getProductExportItem($salesChannelContext, $useSeoUrls, $product);
             if ($exportItem !== null) {
                 $exporter->addItem($exportItem);
             }
-            foreach ($product->getChildren() as $children) {
-                $exportItem = $this->getProductExportItem($salesChannelContext, $children, $product);
+            foreach ($includeVariants ? $product->getChildren() : [] as $children) {
+                $exportItem = $this->getProductExportItem($salesChannelContext, $useSeoUrls, $children, $product);
                 if ($exportItem !== null) {
                     $exporter->addItem($exportItem);
                 }
@@ -113,9 +115,8 @@ class ProductExporter
         return $exporter;
     }
     
-    private function getProductExportItem (SalesChannelContext $salesChannelContext, ProductEntity $product, ProductEntity $parentProduct = null) :? ProductExportItem {
+    private function getProductExportItem (SalesChannelContext $salesChannelContext, bool $useSeoUrls, ProductEntity $product, ProductEntity $parentProduct = null) :? ProductExportItem {
         /* @var $cartService CartService */
-        $domain = $salesChannelContext->getSalesChannel()->getDomains()->filterByProperty('languageId', $salesChannelContext->getContext()->getLanguageId())->first();
         // create cart and fill with one product to get calculated price
         $cartService = $this->container->get(CartService::class);
         $lineItem = (new ProductLineItemFactory())->create($product->getId());
@@ -138,31 +139,45 @@ class ProductExporter
             (string) $this->translate('getDescription', $product, $parentProduct),
             (float) $productPrice,
             (float) $cartPrice,
-            (string) $this->getProductUrl($domain->getUrl(), $product, $parentProduct),
+            (string) $this->getProductUrl($salesChannelContext, $useSeoUrls, $product, $parentProduct),
             (string) ($lineItem->getCover() === null ? '' : $lineItem->getCover()->getUrl())
          );
     }
     
-    private function getProductUrl($shopUrl, ProductEntity $product, ProductEntity $parentProduct = null): string
+    private function getDomain (SalesChannelContext $salesChannelContext) : SalesChannelDomainEntity
+    {
+        $languageId = $salesChannelContext->getContext()->getLanguageId();
+        $key = $salesChannelContext->getSalesChannel()->getId().'|'.$languageId;
+        if (!isset($this->domains[$key])) {
+            $this->domains[$key] = $salesChannelContext->getSalesChannel()->getDomains()->filterByProperty('languageId', $languageId)->first();
+        }
+        return $this->domains[$key];
+    }
+    
+    private function getProductUrl(SalesChannelContext $salesChannelContext, bool $useSeoUrls, ProductEntity $product, ProductEntity $parentProduct = null): string
     {
         $url = null;
-        $seoUrls = $product->getSeoUrls();
-        if ($seoUrls === null && $parentProduct !== null) {
-            $seoUrls = $parentProduct->getSeoUrls();
-        }
-        if ($seoUrls !== null) {
-            foreach ($seoUrls as $seoUrl) {
-                $seoPathInfo = $seoUrl->getSeoPathInfo();
-                if ($seoPathInfo !== '') {
-                    $url = $seoPathInfo;
-                    if ($seoUrl->getIsCanonical()) {
-                        break;
+        if ($useSeoUrls) {
+            $seoUrls = $product->getSeoUrls();
+            if ($seoUrls === null && $parentProduct !== null) {
+                $seoUrls = $parentProduct->getSeoUrls();
+            }
+            if ($seoUrls !== null) {
+                foreach ($seoUrls as $seoUrl) {
+                    if (
+                        $seoUrl->getSalesChannelId() === $salesChannelContext->getSalesChannel()->getId()
+                        && ($seoPathInfo = $seoUrl->getSeoPathInfo()) !== ''
+                    ) {
+                        $url = $seoPathInfo;
+                        if ($seoUrl->getIsCanonical()) {
+                            break;
+                        }
                     }
                 }
             }
         }
         $url = $url === null ? 'detail/'.$product->getId() : $url;
-        return $shopUrl.'/'.$url;
+        return $this->getDomain($salesChannelContext)->getUrl().'/'.$url;
     }
     
 }

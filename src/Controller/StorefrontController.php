@@ -50,7 +50,9 @@ class StorefrontController extends ShopwareStorefrontController
                         'parameters' => [
                             'format' => ['values' => ['csv', 'json'], 'default' => 'csv', 'optional' => true, ],
                             'page' => ['type' => 'integer', 'optional' => true, ],
-                            'limit' => ['type' => 'integer', 'default' => self::PRODUCT_EXPORT_LIMIT, 'optional' => true,],
+                            'limit' => ['type' => 'integer', 'default' => self::PRODUCT_EXPORT_LIMIT, 'optional' => true, ],
+                            'include_variants' => ['type' => 'string', 'default' => 'true', 'optional' => true, ],
+                            'use_seo_urls' => ['type' => 'string', 'default' => 'true', 'optional' => true, ],
                         ],
                     ],
                 ]
@@ -72,9 +74,13 @@ class StorefrontController extends ShopwareStorefrontController
             try {
                 $page = (int) $request->get('page') < 1 ? null : (int) $request->get('page') - 1;
                 $limit = (int) $request->get('limit') < 1 ? self::PRODUCT_EXPORT_LIMIT : (int) $request->get('limit');
+                $includeVariants = $request->get('include_variants') !== 'false';
+                $useSeoUrls = $request->get('use_seo_urls') !== 'false';
                 $productExporter = $this->container->get(ProductExporter::class);
                 $exporter = $productExporter->export(
                     $salesChannelContext,
+                    $includeVariants,
+                    $useSeoUrls,
                     $request->get('format') === 'json' ? ProductExporter::FORMAT_JSON : ProductExporter::FORMAT_CSV,
                     $page === null ? null : $limit,
                     $page === null ? null : $page * $limit
