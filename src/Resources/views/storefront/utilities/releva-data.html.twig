@@ -21,9 +21,12 @@
         {% set src = src ~ '&custid=' ~ context.customer.customerNumber %}
     {% endif %}
     <script type="text/javascript">
-        var relevanzRetargetingForcePixelInterval = window.setInterval(function () {
-            if (typeof relevanzRetargetingForcePixel !== "undefined" && relevanzRetargetingForcePixel === true) {
-                window.clearInterval(relevanzRetargetingForcePixelInterval);
+        var relevanzForcePixelInterval = window.setInterval(function () {
+            if (
+                (typeof relevanzRetargetingForcePixel !== "undefined" && relevanzRetargetingForcePixel === true)
+                || (typeof relevanzForcePixel !== "undefined" && relevanzForcePixel === true)
+            ) {
+                window.clearInterval(relevanzForcePixelInterval);
                 var script = document.createElement('script');
                 script.type = 'text/javascript';
                 script.src = "{{ src | raw }}";
