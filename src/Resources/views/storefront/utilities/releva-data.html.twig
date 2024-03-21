@@ -21,12 +21,12 @@
         {% set src = src ~ '&custid=' ~ context.customer.customerNumber %}
     {% endif %}
     <script type="text/javascript">
-        var relevanzForcePixelInterval = window.setInterval(function () {
+        var relevanzAppInterval = window.setInterval(function () {
             if (
                 (typeof relevanzRetargetingForcePixel !== "undefined" && relevanzRetargetingForcePixel === true)
-                || (typeof relevanzForcePixel !== "undefined" && relevanzForcePixel === true)
+                || (typeof relevanzAppForcePixel !== "undefined" && relevanzAppForcePixel === true)
             ) {
-                window.clearInterval(relevanzForcePixelInterval);
+                window.clearInterval(relevanzAppInterval);
                 var script = document.createElement('script');
                 script.type = 'text/javascript';
                 script.src = "{{ src | raw }}";
