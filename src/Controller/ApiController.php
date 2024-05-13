@@ -21,15 +21,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
+#[Route(defaults:["_routeScope" => ["api"]])]
 class ApiController extends AbstractController
 {
 
-    /**
-     * @Route("/api/releva/retargeting/getInvolvedSalesChannelsToIframeUrls", name="api.action.releva.retargeting.getinvolvedsaleschannelstoiframeurls", methods={"POST"})
-     */
+    #[Route("/api/releva/retargeting/getInvolvedSalesChannelsToIframeUrls", name: "api.action.releva.retargeting.getinvolvedsaleschannelstoiframeurls", methods: ["POST"])]
     public function getInvolvedSalesChannelsToIframeUrlsAction(Context $context): JsonResponse
     {
         /* @var $systemConfigService SystemConfigService */
@@ -69,9 +65,7 @@ class ApiController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/api/releva/retargeting/getVerifyApiKey", name="api.action.releva.retargeting.getverifyapikey", methods={"POST"})
-     */
+    #[Route("/api/releva/retargeting/getVerifyApiKey", name: "api.action.releva.retargeting.getverifyapikey", methods: ["POST"])]
     public function getVerifyApiKeyAction(Request $request, Context $context): JsonResponse
     {
         /* @var $salesChannelEntity SalesChannelEntity */

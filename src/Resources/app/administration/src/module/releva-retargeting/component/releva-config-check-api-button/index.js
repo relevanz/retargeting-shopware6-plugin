@@ -37,29 +37,38 @@ Component.extend('releva-config-check-api-button', 'sw-text-field', {
             scopeMessage: this.$attrs.scopeMessage,
         };
     },
-    
     computed: {
         buttonIcon() {
+            if (typeof this.currentValue === "undefined") {
+                return;
+            }
+            // icons are in /vendor/shopware/administration/Resources/app/administration/node_modules/@shopware-ag/meteor-icon-kit/icons/regular/
             switch (this.checkApiState) {
                 case "success": {
-                    return {name: "default-basic-checkmark-circle", color: "green"};
+                    return {name: "regular-check-circle", color: "green"};
                 }
                 case "error": {
-                    return {name: "default-badge-error", color: "red"};
+                    return {name: "regular-exclamation-circle", color: "red"};
                 }
                 case "checking": {
-                    return {name: "default-web-loading-circle", color: "gray"};
+                    return {name: "regular-sync", color: "gray"};
+                }
+                case "unchecked": {
+                    return {name: "regular-cloud-upload", color: "silver"};
                 }
                 default: {
-                    return {name: "default-action-cloud-upload", color: "silver"};
+                    return {name: "regular-ellipsis-h-s", color: "silver"};
                 }
             }
         }
     },
-    
     methods: {
+        setApiStateOnInput(input) {
+            this.checkApiState = input.srcElement.value.trim() === "" ? "" : "unchecked";
+            this.onInput(input);
+        },
         changeMode(disabled) {
-            if (disabled) {
+            if (disabled || (typeof this.currentValue !== "undefined" ? this.currentValue.trim() : "") === "") {
                 return;
             }
             this.checkApiState = "checking";

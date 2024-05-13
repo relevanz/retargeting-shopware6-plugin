@@ -3,19 +3,22 @@
         {% parent() %}
     </template>
     <template v-else>
-        <sw-inherit-wrapper v-model="actualConfigData[currentSalesChannelId][element.name]"
-                            v-bind="getInheritWrapperBind(element)"
-                            :hasParent="false"
-                            :inheritedValue="getInheritedValue(element)"
-                            :class="'sw-system-config--field-' + kebabCase(getElementBind(element).name)">
+        <sw-inherit-wrapper
+            v-model:value="actualConfigData[currentSalesChannelId][element.name]"
+            v-bind="getInheritWrapperBind(element)"
+            :has-parent="false"{# only change to parent block to disable inheritance of global config values #}
+            :inherited-value="getInheritedValue(element)"
+            :class="'sw-system-config--field-' + kebabCase(getElementBind(element).name)"
+        >
             <template #content="props">
-                <sw-form-field-renderer v-bind="getElementBind(element, props)"
-                                        :disabled="props.isInherited"
-                                        :value="props.currentValue"
-                                        :key="props.isInheritField + props.isInherited"
-                                        @input="props.updateCurrentValue"
-                                        @change="props.updateCurrentValue">
-                </sw-form-field-renderer>
+                <sw-form-field-renderer
+                    v-bind="getElementBind(element, props)"
+                    :key="props.isInheritField + props.isInherited"
+                    :disabled="props.isInherited"
+                    :value="props.currentValue"
+                    :error="getFieldError(element.name)"
+                    @update:value="props.updateCurrentValue"
+                />
             </template>
         </sw-inherit-wrapper>
     </template>

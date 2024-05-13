@@ -18,18 +18,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @ RouteScope(scopes={"storefront"})
- * @Route(defaults={"_routeScope"={"storefront"}})
- */
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class StorefrontController extends ShopwareStorefrontController
 {
 
     private const PRODUCT_EXPORT_LIMIT = 100;
 
-    /**
-     * @Route("/releva/retargeting/callback", name="frontend.releva.retargeting.callback", options={"seo"="false"}, methods={"GET"})
-     */
+    #[Route('/releva/retargeting/callback', name: 'frontend.releva.retargeting.callback', options: ['seo' => 'false'], methods: ["GET"])]
     public function callbackAction(Request $request, SalesChannelContext $salesChannelContext): JsonResponse
     {
         $response = new JsonResponse();
@@ -61,9 +56,7 @@ class StorefrontController extends ShopwareStorefrontController
         return $response;
     }
 
-    /**
-     * @Route("/releva/retargeting/products", name="frontend.releva.retargeting.products", options={"seo"="false"}, methods={"GET"})
-     */
+    #[Route('/releva/retargeting/products', name: 'frontend.releva.retargeting.products', options: ['seo' => 'false'], methods: ["GET"])]
     public function productsAction(Request $request, SalesChannelContext $salesChannelContext) : Response
     {
         $response = new Response;

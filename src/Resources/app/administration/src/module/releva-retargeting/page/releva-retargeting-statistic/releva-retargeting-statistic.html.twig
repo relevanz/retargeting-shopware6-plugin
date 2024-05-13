@@ -1,6 +1,6 @@
 {% block releva_retargeting_statistic %}
     <sw-page class="releva-retargeting-statistic">
-        <template slot="smart-bar-actions">
+        <template #smart-bar-actions>
             {% block releva_retargeting_statistic_actions %}
                 <sw-single-select
                     v-if="salesChannelsToIframeUrl && salesChannelsToIframeUrl.length > 1"
@@ -8,14 +8,14 @@
                     size="big" 
                     labelProperty="salesChannel"
                     valueProperty="iframeUrl"
-                    @change="onSalesChannelsToIframeUrlSelectionChange"
+                    @update:value="onSalesChannelsToIframeUrlSelectionChange"
                     :value="currentIframeUrl"
                     :options="salesChannelsToIframeUrl"
                     :placeholder="$tc('releva-retargeting.config.relevaSalesChannelSwitch.label')"
                 ></sw-single-select>
             {% endblock %}
         </template>
-        <template slot="content">
+        <template #content>
             {% block releva_retargeting_statistic_content %}
                 <div v-if='currentIframeUrl' class="releva-frame-container">
                     <template>

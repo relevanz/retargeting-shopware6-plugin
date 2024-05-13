@@ -4,7 +4,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <service id="releva_retargeting.logger" class="Monolog\Logger">
-            <factory service="Shopware\Core\Framework\Log\LoggerFactory" method="createRotating"/>
             <argument type="string">releva_retargeting</argument>
         </service>
         <service id="Releva\Retargeting\Shopware\Controller\ApiController">

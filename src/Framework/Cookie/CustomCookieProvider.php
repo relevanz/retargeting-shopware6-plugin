@@ -22,34 +22,37 @@ class CustomCookieProvider implements CookieProviderInterface
         $this->requestStack = $requestStack;
     }
     
-    /**
-     * @todo check if plugin is configured
-     */
     public function getCookieGroups(): array
     {
-        return array_merge(
-            $this->originalCookieProvider->getCookieGroups(),
-            (
-                $this->systemConfigService->get('RelevaRetargeting.config.trackingActive', $this->requestStack->getCurrentRequest()->get('sw-sales-channel-id'))
-                && $this->systemConfigService->get('RelevaRetargeting.config.relevanzUserId', $this->requestStack->getCurrentRequest()->get('sw-sales-channel-id'))
-                ? [
-                    [
-                        'snippet_name' => 'cookie.groupMarketing',
-                        'snippet_description' => 'cookie.groupMarketingDescription',
-                        'entries' => [
-                            [
-                                'snippet_name' => 'cookie.relevanzRetargeting',
-                                'snippet_description' => 'cookie.relevanzRetargetingDescription',
-                                'cookie' => 'relevanzRetargeting',
-                                'value'=> 'allow',
-                                'expiration' => '30'
-                            ],
-                        ],
-                    ]
-                ]
-                : []
-            )
-        );
+        $originalCookieGroups = $this->originalCookieProvider->getCookieGroups();
+        if (
+            $this->systemConfigService->get('RelevaRetargeting.config.trackingActive', $this->requestStack->getCurrentRequest()->get('sw-sales-channel-id'))
+            && $this->systemConfigService->get('RelevaRetargeting.config.relevanzUserId', $this->requestStack->getCurrentRequest()->get('sw-sales-channel-id'))
+        ) {
+            $foundIndex = null;
+            foreach ($originalCookieGroups as $originalCookieGroupIndex => $originalCookieGroup) {
+                if ($originalCookieGroup['snippet_name'] === 'cookie.groupMarketing') {
+                    $foundIndex = $originalCookieGroupIndex;
+                    break;
+                }
+            }
+            if ($foundIndex === null) {
+                $foundIndex = count($originalCookieGroups);
+                $originalCookieGroups[] = [
+                    'snippet_name' => 'cookie.groupMarketing',
+                    'snippet_description' => 'cookie.groupMarketingDescription',
+                    'entries' => [],
+                ];
+            }
+            $originalCookieGroups[$foundIndex]['entries'][] = [
+                'snippet_name' => 'cookie.relevanzRetargeting',
+                'snippet_description' => 'cookie.relevanzRetargetingDescription',
+                'cookie' => 'relevanzRetargeting',
+                'value'=> 'allow',
+                'expiration' => '30',
+            ];
+        }
+        return $originalCookieGroups;
     }
     
 }

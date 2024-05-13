@@ -3,6 +3,5 @@
     100% {transform: rotate(360deg);}
 }
 .releva-config-check-api-button-button{display: inline-flex;cursor:pointer;}
-.releva-config-check-api-button-button-text{margin-right: 1em;}
-.sw-contextual-field .sw-field__addition .sw-icon.releva-config-check-api-button-button-icon{line-height:100%;animation:none;}
-.sw-contextual-field .sw-field__addition .sw-icon.releva-config-check-api-button-button-icon.icon--default-web-loading-circle{animation:1.4s ease-in-out infinite both releva-config-check-api-button-button-icon--animation;}
+.releva-config-check-api-button-button .releva-config-check-api-button-button-icon{line-height:100%;animation:none;}
+.releva-config-check-api-button-button .releva-config-check-api-button-button-icon.icon--regular-sync{animation:1.4s ease-in-out infinite both releva-config-check-api-button-button-icon--animation;}

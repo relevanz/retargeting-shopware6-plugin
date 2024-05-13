@@ -14,7 +14,7 @@ use Psr\Container\ContainerInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\Content\Product\Cart\ProductLineItemFactory;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -119,7 +119,7 @@ class ProductExporter
         /* @var $cartService CartService */
         // create cart and fill with one product to get calculated price
         $cartService = $this->container->get(CartService::class);
-        $lineItem = (new ProductLineItemFactory())->create($product->getId());
+        $lineItem = new LineItem($product->getId(), LineItem::PRODUCT_LINE_ITEM_TYPE , $product->getId());
         $cartService->add($cartService->createNew('releva'), $lineItem, $salesChannelContext);
         $cartPrice = 0;
         $productPrice = null;

@@ -9,15 +9,16 @@
                         :value="currentValue"
                         :placeholder="placeholder"
                         :disabled="disabled"
-                        @input="onInput"
+                        @input="setApiStateOnInput"
                         @change="onChange"
                         @focus="setFocusClass"
                         @blur="removeFocusClass">
                 </template>
                 <template #sw-contextual-field-suffix="{ disabled }">
                     <span @click="changeMode(disabled)" class="releva-config-check-api-button-button">
-                        <span v-if="buttonText" class="releva-config-check-api-button-button-text">{{buttonText}}</span>
-                        <sw-icon v-if="buttonIcon" class="releva-config-check-api-button-button-icon" :color="buttonIcon.color" :name="buttonIcon.name" :small="true"></sw-icon>
+                        <span v-if="buttonText" class="releva-config-check-api-button-button-text">
+                            <sw-icon v-if="buttonIcon" class="releva-config-check-api-button-button-icon" :color="buttonIcon.color" :name="buttonIcon.name" :small="true"></sw-icon>
+                        </span>
                     </span>
                 </template>
             </sw-contextual-field>
