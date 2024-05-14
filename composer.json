@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "shopware/core": ">=6.5",
+        "shopware/core": ">=6.6",
         "shopware/administration": "*",
         "shopware/storefront": "*",
         "relevanz/retargeting-base-lib": "*"
