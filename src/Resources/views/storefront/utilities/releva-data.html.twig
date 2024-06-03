@@ -1,6 +1,6 @@
 {% if page.footer.extensions.releva.tracking_active and page.footer.extensions.releva.user_id %}
     {{ page.footer.extensions.releva.additional_html | raw }}
-    {% if page.order is defined and page.order != null %}
+    {% if page.order is defined and page.order != null and controllerAction === "finishPage" %}
         {% set productIds = [] %}
         {% for orderItem in page.order.lineItems %}
             {% set productIds = productIds | merge ([orderItem.getProductId]) %}
