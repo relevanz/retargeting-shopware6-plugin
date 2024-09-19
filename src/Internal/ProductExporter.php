@@ -10,6 +10,8 @@ use Releva\Retargeting\Base\Exception\RelevanzException;
 use Releva\Retargeting\Shopware\Internal\RepositoryHelper;
 
 use Psr\Container\ContainerInterface;
+use Exception;
+use Throwable;
 
 use Shopware\Core\Defaults;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
@@ -101,21 +103,25 @@ class ProductExporter
         $exporter = $format === 'json' ? new ProductJsonExporter() : new ProductCsvExporter();
         foreach ($productsSearchResult as $product) {
             /* @var $product ProductEntity */
-            $exportItem = $this->getProductExportItem($salesChannelContext, $useSeoUrls, $product);
-            if ($exportItem !== null) {
+            try {
+                $exportItem = $this->getProductExportItem($salesChannelContext, $useSeoUrls, $product);
                 $exporter->addItem($exportItem);
+            } catch (Throwable) {
+                // next product
             }
             foreach ($includeVariants ? $product->getChildren() : [] as $children) {
-                $exportItem = $this->getProductExportItem($salesChannelContext, $useSeoUrls, $children, $product);
-                if ($exportItem !== null) {
+                try {
+                    $exportItem = $this->getProductExportItem($salesChannelContext, $useSeoUrls, $children, $product);
                     $exporter->addItem($exportItem);
+                } catch (Throwable) {
+                    // next variant
                 }
             }
         }
         return $exporter;
     }
     
-    private function getProductExportItem (SalesChannelContext $salesChannelContext, bool $useSeoUrls, ProductEntity $product, ProductEntity $parentProduct = null) :? ProductExportItem {
+    private function getProductExportItem (SalesChannelContext $salesChannelContext, bool $useSeoUrls, ProductEntity $product, ProductEntity $parentProduct = null) : ProductExportItem {
         /* @var $cartService CartService */
         // create cart and fill with one product to get calculated price
         $cartService = $this->container->get(CartService::class);
@@ -128,9 +134,8 @@ class ProductExporter
             $cartPrice += $cartLineItem->getPrice()->getTotalPrice();//promotion has negative price
         }
         if ($productPrice === null) {
-            return null;
+            throw new Exception('LineItem price is null', 1726744188);
         }
-        
         return new ProductExportItem(
             (string) $product->getId(),
             (array) $this->getProductCategoryIds($salesChannelContext->getSalesChannel(), $product),
