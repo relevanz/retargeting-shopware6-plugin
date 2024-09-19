@@ -141,7 +141,7 @@ class ProductExporter
             (array) $this->getProductCategoryIds($salesChannelContext->getSalesChannel(), $product),
             (string) $this->translate('getName', $product, $parentProduct),
             (string) $this->translate('getMetaDescription', $product, $parentProduct),
-            (string) $this->translate('getDescription', $product, $parentProduct),
+            '', //(string) $this->translate('getDescription', $product, $parentProduct),
             (float) $productPrice,
             (float) $cartPrice,
             (string) $this->getProductUrl($salesChannelContext, $useSeoUrls, $product, $parentProduct),
