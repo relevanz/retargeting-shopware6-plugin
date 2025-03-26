@@ -9,7 +9,7 @@
             <label lang="de-DE">API Schlüssel</label>
             <scopeMessage>Api Key is only configurable with selected sales-channel.</scopeMessage>
             <scopeMessage lang="de-DE">Api Schlüssel ist nur mit ausgewählten Verkaufskanal konfigurierbar.</scopeMessage>
-            <!--<scope>storefront</scope>-->
+            <scope>storefront</scope>
         </component>
         <!--
             cannot use input-field after component-node

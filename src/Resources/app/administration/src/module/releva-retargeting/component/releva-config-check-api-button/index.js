@@ -39,7 +39,7 @@ Component.extend('releva-config-check-api-button', 'sw-text-field', {
     },
     computed: {
         buttonIcon() {
-            if (typeof this.currentValue === "undefined") {
+            if (typeof this.compatValue === "undefined") {
                 return;
             }
             // icons are in /vendor/shopware/administration/Resources/app/administration/node_modules/@shopware-ag/meteor-icon-kit/icons/regular/
@@ -60,21 +60,23 @@ Component.extend('releva-config-check-api-button', 'sw-text-field', {
                     return {name: "regular-ellipsis-h-s", color: "silver"};
                 }
             }
+        },
+        checkApiState() {
+            this.disabled() ? "" : "unchecked";
+        },
+        disabled() {
+            return typeof this.compatValue !== "undefined" && this.compatValue.trim() !== ""
         }
     },
     methods: {
-        setApiStateOnInput(input) {
-            this.checkApiState = input.srcElement.value.trim() === "" ? "" : "unchecked";
-            this.onInput(input);
-        },
         changeMode(disabled) {
-            if (disabled || (typeof this.currentValue !== "undefined" ? this.currentValue.trim() : "") === "") {
+            if (disabled || (typeof this.compatValue !== "undefined" ? this.compatValue.trim() : "") === "") {
                 return;
             }
             this.checkApiState = "checking";
             var self = this;
             this.retargetingApiService.getVerifyApiKey({
-                apiKey: typeof this.currentValue !== "undefined" ? this.currentValue.trim() : "",
+                apiKey: typeof this.compatValue !== "undefined" ? this.compatValue.trim() : "",
                 salesChannel: function(current) {
                     while (typeof current.$parent !== "undefined") {
                         current = current.$parent;

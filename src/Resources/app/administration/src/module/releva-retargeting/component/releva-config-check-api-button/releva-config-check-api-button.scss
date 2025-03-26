@@ -2,6 +2,8 @@
     0% {transform: rotate(0deg);}
     100% {transform: rotate(360deg);}
 }
+.mt-field[componentname="releva-config-check-api-button"] {margin-bottom:0;}
+.mt-field[componentname="releva-config-check-api-button"] .mt-field__label{display:none;}
 .releva-config-check-api-button-button{display: inline-flex;cursor:pointer;}
 .releva-config-check-api-button-button .releva-config-check-api-button-button-icon{line-height:100%;animation:none;}
 .releva-config-check-api-button-button .releva-config-check-api-button-button-icon.icon--regular-sync{animation:1.4s ease-in-out infinite both releva-config-check-api-button-button-icon--animation;}
