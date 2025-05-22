@@ -115,26 +115,24 @@ class ApiController extends AbstractController
         }
     }
 
-    private function getDomainForSalesChannel(SalesChannelEntity $salesChannelEntity): SalesChannelDomainEntity
+    private function getDomainForSalesChannel(SalesChannelEntity $salesChannel): SalesChannelDomainEntity
     {
-        $domain = null;
-        foreach ($salesChannelEntity->getDomains() as $domainEntity) {
-            if (
-                $domain === null // use any domain
-                || in_array($domainEntity->getLanguageId(), [
-                    $salesChannelEntity->getLanguageId(), // configured domain
-                    Defaults::SALES_CHANNEL, // system default domain
-                ])) {
-                $domain = $domainEntity;
+        $domains = $salesChannel->getDomains();
+        if ($domains === null || $domains->count() === 0) {
+            throw new RelevanzException('Storefront doesn’t have any domains.', 1579849966);
+        }
+
+        $languageId = $salesChannel->getLanguageId();
+
+        /** @var SalesChannelDomainEntity $domainEntity */
+        foreach ($domains as $domainEntity) {
+            if ($domainEntity->getLanguageId() === $languageId) {
+                return $domainEntity;
             }
-             if ($domainEntity->getLanguageId() === $salesChannelEntity->getLanguageId()) {
-                 break;
-             }
         }
-        if ($domain === null) {
-            throw new RelevanzException('Storefront doesn\'t have domain.', 1579849966);
-        }
-        return $domain;
+
+        // fallback to first domain if none matched by language
+        return $domains->first();
     }
 
 }
