@@ -8,7 +8,7 @@
             <label>API-Key</label>
             <label lang="de-DE">API Schlüssel</label>
             <scopeMessage>Api Key is only configurable with selected sales-channel.</scopeMessage>
-            <scopeMessage lang="de-DE">Api Schlüssel ist nur mit ausgewählten Verkaufskanal konfigurierbar.</scopeMessage>
+            <scopeMessageDE>Api Schlüssel ist nur mit ausgewählten Verkaufskanal konfigurierbar.</scopeMessageDE>
             <scope>storefront</scope>
         </component>
         <!--
@@ -30,7 +30,7 @@
             <label lang="de-DE">Zusätzliches HTML</label>
             <helpText><![CDATA[If you doesn't use shopware cookie consent manager, you can define alternative cookie check here.<br><br>Example: <p style="color:silver;"><p style="color:silver;">&lt;script&gt<br>/* Pixels will included without any cookie check */<br>var relevanzRetargetingForcePixel = true;&lt;<br>/script&gt;</p>]]></helpText>
             <helpText lang="de-DE"><![CDATA[Wenn sie nicht den Shopware-Cookie-Consent-Manager nutzen, können sie hier einen alternativen Cookie-Check machen.<br><br>Beispiel: <p style="color:silver;">&lt;script&gt<br>/* Pixels will included without any cookie check */<br>var relevanzRetargetingForcePixel = true;<br>&lt;/script&gt;</p>]]></helpText>
-            <scope>storefront</scope>
+<!--             <scope>storefront</scope> -->
             <placeholder><![CDATA[<script>var relevanzRetargetingForcePixel = true;</script>]]>></placeholder>
         </component>
     </card>

@@ -1,0 +1,25 @@
+{
+  "base": "/bundles/relevaretargeting/administration/",
+  "entryPoints": {
+    "releva-retargeting": {
+      "css": [
+        "/bundles/relevaretargeting/administration/assets/releva-retargeting-Ax28yUFE.css"
+      ],
+      "dynamic": [],
+      "js": [
+        "/bundles/relevaretargeting/administration/assets/releva-retargeting-DT8kkpNy.js"
+      ],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "7.1.0",
+    7,
+    1,
+    0
+  ],
+  "viteServer": null
+}

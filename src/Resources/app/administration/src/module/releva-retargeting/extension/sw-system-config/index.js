@@ -11,56 +11,20 @@ Component.override('sw-system-config', {
     mixins: [
         Mixin.getByName('releva-notification')
     ],
-
-    watch: {
-        currentSalesChannelId() {
-            this.readConfig();
-        },
-        config() {
-            if (this.domain === "RelevaRetargeting.config") {
-                for (var card of this.config) {
-                    for (var element of card.elements) {
-                        if (!this.currentSalesChannelId && element.config.hasOwnProperty("scope") && element.config.scope !== "global") {
-                             card.elements = card.elements.filter(function(deleteElement) {
-                                 return element !== deleteElement;
-                             })
-                        } else {
-                            element.config.disabled =
-                                element.config.hasOwnProperty("disabled")
-                                ? element.config.disabled
-                                : false
-                            ;
-                        }
-                        /**
-                         * bugfix for translations
-                         * @link https://issues.shopware.com/issues/NEXT-8104
-                         */
-//                        if (typeof element.config.componentName === "string") {
-//                            for (var configType of ['label', 'helpText', 'errorMessage']) {
-//                                if (typeof element.config[configType] === "object") {
-//                                    for (var locale of [State.getters.adminLocaleLanguage + '-' + State.getters.adminLocaleRegion, 'en-GB']) {
-//                                        if (typeof element.config[configType][locale] !== "undefined") {
-//                                            element.config[configType] = element.config[configType][locale];
-//                                            break;
-//                                        }
-//                                    }
-//                                    if (typeof element.config[configType] === "object") {
-//                                        element.config[configType] = element.config[configType][Object.keys(element.config[configType])[0]];//use first translation
-//                                    }
-//                                }
-//                            }
-//                        }
-                    }
-                    if (card.elements.length === 0) {
-                        this.config = this.config.filter(function(deleteCard) {
-                            return card !== deleteCard;
-                        })
-                    }
-                }
-            }
-        }
-    },
     methods: {
+        getScopeMessage(element) {
+            var snippet = {};
+            var hasScopeMessage = false;
+            if (element.config.hasOwnProperty("scopeMessage")) {
+                hasScopeMessage = true;
+                snippet['en-EN'] = element.config.scopeMessage;
+            }
+            if (element.config.hasOwnProperty("scopeMessageDE")) {
+                hasScopeMessage = true;
+                snippet['de-DE'] = element.config.scopeMessageDE;
+            }
+            return hasScopeMessage ? this.getInlineSnippet(snippet) : null;
+        },
         saveAll() {
             this.isLoading = true;
             if (this.domain === "RelevaRetargeting.config" && this.currentSalesChannelId) {
@@ -83,18 +47,6 @@ Component.override('sw-system-config', {
             } else {
                 return this.$super("saveAll");
             }
-        },
-        isDefaultSalesChannelOrGlobalScope(element) {
-            if (
-                this.domain === "RelevaRetargeting.config" 
-                && (
-                    element.config.hasOwnProperty("scopeMessage")
-                    || (element.config.hasOwnProperty("scope") && element.config.scope !== "global")
-                )
-             ) {
-                return false;
-            }
-            return true;
         }
     }
 });

@@ -18,9 +18,7 @@
         <template #content>
             {% block releva_retargeting_statistic_content %}
                 <div v-if='currentIframeUrl' class="releva-frame-container">
-                    <template>
-                        <iframe v-bind:src="currentIframeUrl" class="releva-frame-frame"></iframe>
-                    </template>
+                    <iframe :src="currentIframeUrl" class="releva-frame-frame"></iframe>
                 </div>
             {% endblock %}
         </template>

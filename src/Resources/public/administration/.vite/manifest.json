@@ -1,0 +1,11 @@
+{
+  "main.js": {
+    "file": "assets/releva-retargeting-DT8kkpNy.js",
+    "name": "releva-retargeting",
+    "src": "main.js",
+    "isEntry": true,
+    "css": [
+      "assets/releva-retargeting-Ax28yUFE.css"
+    ]
+  }
+}

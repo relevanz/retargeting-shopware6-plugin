@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 #clean generated webpack files and copy to repository
-rm -r ./src/Resources/app/storefront/dist/
-docker cp shopware:/var/www/html/custom/plugins/RelevaRetargeting/src/Resources/app/storefront/dist/ ./src/Resources/app/storefront/dist/
-rm -r ./src/Resources/public/administration/css/
-docker cp shopware:/var/www/html/custom/plugins/RelevaRetargeting/src/Resources/public/administration/css ./src/Resources/public/administration/
-rm -r ./src/Resources/public/administration/js/
-docker cp shopware:/var/www/html/custom/plugins/RelevaRetargeting/src/Resources/public/administration/js ./src/Resources/public/administration/
+rm -rf ./src/Resources/app/storefront/dist/
+cp -r ../shopware-6.7.docker/custom/plugins/RelevaRetargeting/src/Resources/app/storefront/dist/ ./src/Resources/app/storefront/dist/
+rm -rf ./src/Resources/public/administration/.vite/
+cp -r ../shopware-6.7.docker/custom/plugins/RelevaRetargeting/src/Resources/public/administration/.vite ./src/Resources/public/administration/
+rm -rf ./src/Resources/public/administration/assets/
+cp -r ../shopware-6.7.docker/custom/plugins/RelevaRetargeting/src/Resources/public/administration/assets ./src/Resources/public/administration/
 
 #clean folder
 rm -rf RelevaRetargeting RelevaRetargeting.zip

@@ -1,25 +1,31 @@
 {% block sw_system_config_content_card_field %}
-    <template v-if="isDefaultSalesChannelOrGlobalScope(element)">
+    <template v-if="domain !== 'RelevaRetargeting.config'">
         {% parent() %}
     </template>
-    <template v-else>
-        <sw-inherit-wrapper
-            v-model:value="actualConfigData[currentSalesChannelId][element.name]"
-            v-bind="getInheritWrapperBind(element)"
-            :has-parent="false"{# only change to parent block to disable inheritance of global config values #}
-            :inherited-value="getInheritedValue(element)"
-            :class="'sw-system-config--field-' + kebabCase(getElementBind(element).name)"
-        >
-            <template #content="props">
-                <sw-form-field-renderer
-                    v-bind="getElementBind(element, props)"
-                    :key="props.isInheritField + props.isInherited"
-                    :disabled="props.isInherited"
-                    :value="props.currentValue"
-                    :error="getFieldError(element.name)"
-                    @update:value="props.updateCurrentValue"
-                />
-            </template>
-        </sw-inherit-wrapper>
-    </template>
+    <sw-inherit-wrapper
+        v-else-if="isNotDefaultSalesChannel || !element.config.hasOwnProperty('scope') || element.config.scope === 'global'"
+        v-model:value="actualConfigData[currentSalesChannelId][element.name]"
+        v-bind="getInheritWrapperBind(element)"
+        :has-parent="isNotDefaultSalesChannel && (!element.config.hasOwnProperty('scope') || element.config.scope === 'global')" {# changes to parent() #}
+        :inherited-value="getInheritedValue(element)"
+        :class="'sw-system-config--field-' + kebabCase(getElementBind(element).name)"
+    >
+        <template #content="props">
+            <sw-form-field-renderer
+                v-bind="getElementBind(element, props)"
+                :key="props.isInheritField + props.isInherited"
+                :disabled="props.isInherited"
+                :value="props.currentValue"
+                :error="getFieldError(element.name)"
+                @update:value="props.updateCurrentValue"
+            />
+        </template>
+    </sw-inherit-wrapper>
+    <mt-banner
+        v-else-if="getScopeMessage(element) !== null"
+        :title="getInlineSnippet(element.config.label)"
+        variant="info"
+    >
+        {{ getScopeMessage(element) }}
+    </mt-banner>
 {% endblock %}
