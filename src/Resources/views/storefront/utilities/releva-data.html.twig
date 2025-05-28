@@ -1,20 +1,20 @@
-{% if page.footer.extensions.releva.tracking_active and page.footer.extensions.releva.user_id %}
-    {{ page.footer.extensions.releva.additional_html | raw }}
+{% if headerParameters.releva.tracking_active and headerParameters.releva.user_id %}
+    {{ headerParameters.releva.additional_html | raw }}
     {% if page.order is defined and page.order != null and controllerAction === "finishPage" %}
         {% set productIds = [] %}
         {% for orderItem in page.order.lineItems %}
             {% set productIds = productIds | merge ([orderItem.getProductId]) %}
         {% endfor %}
-        {% set src = page.footer.extensions.releva.conv_url ~ '?cid=' ~ page.footer.extensions.releva.user_id ~ '&orderId=' ~ page.order.getOrderNumber() ~ '&amount=' ~ page.order.getAmountTotal() ~ '&products=' ~ productIds | join(',') %}
+        {% set src = headerParameters.releva.conv_url ~ '?cid=' ~ headerParameters.releva.user_id ~ '&orderId=' ~ page.order.getOrderNumber() ~ '&amount=' ~ page.order.getAmountTotal() ~ '&products=' ~ productIds | join(',') %}
         {% set asnc = false %}
     {% elseif page.product is defined and page.product != null %}
-        {% set src = page.footer.extensions.releva.tracker_url ~ '?t=d&action=p&cid=' ~ page.footer.extensions.releva.user_id ~ '&id=' ~ page.product.getId() %}
+        {% set src = headerParameters.releva.tracker_url ~ '?t=d&action=p&cid=' ~ headerParameters.releva.user_id ~ '&id=' ~ page.product.getId() %}
         {% set asnc = true %}
     {% elseif page.cmsPage is defined and page.cmsPage != null and page.cmsPage.type == 'product_list' %}
-        {% set src = page.footer.extensions.releva.tracker_url ~ '?t=d&action=c&cid=' ~ page.footer.extensions.releva.user_id ~ '&id=' ~ page.cmsPage.getId() %}
+        {% set src = headerParameters.releva.tracker_url ~ '?t=d&action=c&cid=' ~ headerParameters.releva.user_id ~ '&id=' ~ page.cmsPage.getId() %}
         {% set asnc = true %}
     {% else %}
-        {% set src = page.footer.extensions.releva.tracker_url ~ '?t=d&action=s&cid=' ~ page.footer.extensions.releva.user_id %}
+        {% set src = headerParameters.releva.tracker_url ~ '?t=d&action=s&cid=' ~ headerParameters.releva.user_id %}
         {% set asnc = true %}
     {% endif %}
     {% if context.customer and not context.customer.guest %}
