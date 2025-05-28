@@ -42,7 +42,7 @@ class ShopInfo extends AbstractShopInfo
         $versionData =
             self::$container === null
             ? []
-            : self::$container->get(Connection::class)->query('SELECT @@version AS `version`, @@version_comment AS `server`;')->fetch()
+            : self::$container->get(Connection::class)->executeQuery('SELECT @@version AS `version`, @@version_comment AS `server`;')->fetchAssociative()
         ;
         return empty($versionData) ? parent::getDbVersion() : $versionData;
     }
