@@ -6,16 +6,12 @@
             {% set productIds = productIds | merge ([orderItem.getProductId]) %}
         {% endfor %}
         {% set src = page.footer.extensions.releva.conv_url ~ '?cid=' ~ page.footer.extensions.releva.user_id ~ '&orderId=' ~ page.order.getOrderNumber() ~ '&amount=' ~ page.order.getAmountTotal() ~ '&products=' ~ productIds | join(',') %}
-        {% set asnc = false %}
     {% elseif page.product is defined and page.product != null %}
         {% set src = page.footer.extensions.releva.tracker_url ~ '?t=d&action=p&cid=' ~ page.footer.extensions.releva.user_id ~ '&id=' ~ page.product.getId() %}
-        {% set asnc = true %}
     {% elseif page.cmsPage is defined and page.cmsPage != null and page.cmsPage.type == 'product_list' %}
         {% set src = page.footer.extensions.releva.tracker_url ~ '?t=d&action=c&cid=' ~ page.footer.extensions.releva.user_id ~ '&id=' ~ page.cmsPage.getId() %}
-        {% set asnc = true %}
     {% else %}
         {% set src = page.footer.extensions.releva.tracker_url ~ '?t=d&action=s&cid=' ~ page.footer.extensions.releva.user_id %}
-        {% set asnc = true %}
     {% endif %}
     {% if context.customer and not context.customer.guest %}
         {% set src = src ~ '&custid=' ~ context.customer.customerNumber %}
@@ -29,10 +25,8 @@
                 window.clearInterval(relevanzAppInterval);
                 var script = document.createElement('script');
                 script.type = 'text/javascript';
+                script.async = true;
                 script.src = "{{ src | raw }}";
-                {% if async == true %}
-                    script.async = true;
-                {% endif %}
                 document.body.appendChild(script);
             }
         }, 500);
