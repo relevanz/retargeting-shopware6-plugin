@@ -11,11 +11,7 @@
             <scopeMessage lang="de-DE">Api Schlüssel ist nur mit ausgewählten Verkaufskanal konfigurierbar.</scopeMessage>
             <scope>storefront</scope>
         </component>
-        <!--
-            cannot use input-field after component-node
-            @link https://issues.shopware.com/issues/NEXT-8104
-        -->
-        <component name="sw-text-field">
+        <input-field type="text">
             <name>relevanzUserId</name>
             <label>User-ID</label>
             <label lang="de-DE">Benutzer ID</label>
@@ -23,8 +19,8 @@
             <helpText lang="de-DE">Benutzer ID wird nach der API Schlüssel Validierung gefüllt.</helpText>
             <disabled>true</disabled>
             <scope>storefront</scope>
-        </component>
-        <component name="sw-textarea-field">
+        </input-field>
+        <input-field type="textarea">
             <name>additionalHtml</name>
             <label>Additional HTML</label>
             <label lang="de-DE">Zusätzliches HTML</label>
@@ -32,7 +28,7 @@
             <helpText lang="de-DE"><![CDATA[Wenn sie nicht den Shopware-Cookie-Consent-Manager nutzen, können sie hier einen alternativen Cookie-Check machen.<br><br>Beispiel: <p style="color:silver;">&lt;script&gt<br>/* Pixels will included without any cookie check */<br>var relevanzRetargetingForcePixel = true;<br>&lt;/script&gt;</p>]]></helpText>
             <scope>storefront</scope>
             <placeholder><![CDATA[<script>var relevanzRetargetingForcePixel = true;</script>]]>></placeholder>
-        </component>
+        </input-field>
     </card>
     <card>
         <title>releva.nz Tracking</title>
