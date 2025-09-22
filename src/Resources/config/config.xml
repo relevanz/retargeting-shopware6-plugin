@@ -24,7 +24,7 @@
             <disabled>true</disabled>
             <scope>storefront</scope>
         </component>
-        <component name="sw-textarea-field">
+        <component name="mt-textarea">
             <name>additionalHtml</name>
             <label>Additional HTML</label>
             <label lang="de-DE">Zusätzliches HTML</label>
