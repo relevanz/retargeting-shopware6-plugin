@@ -1,1 +1,5 @@
 /nbproject/
+.DS_Store
+src/Resources/public/administration/.vite/
+src/Resources/public/static/
+src/Storefront/
