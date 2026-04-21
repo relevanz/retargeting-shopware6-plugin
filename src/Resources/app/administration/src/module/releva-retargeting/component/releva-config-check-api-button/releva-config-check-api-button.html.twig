@@ -3,15 +3,7 @@
     v-bind="$attrs"
     :model-value="compatValue"
     @update:model-value="handleUpdateModelValue"
->
-    <template #suffix>
-        <span @click="changeMode(disabled)" class="releva-config-check-api-button-button">
-            <span v-if="buttonText" class="releva-config-check-api-button-button-text">
-                <sw-icon v-if="buttonIcon" class="releva-config-check-api-button-button-icon" :color="buttonIcon.color" :name="buttonIcon.name" :small="true"></sw-icon>
-            </span>
-        </span>
-    </template>
-</mt-text-field>
+></mt-text-field>
 <div v-else-if="!deprecated" class="releva-api-key-scope-message">
     {{ scopeMessage }}
 </div>
