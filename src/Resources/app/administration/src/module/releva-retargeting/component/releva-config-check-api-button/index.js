@@ -61,9 +61,6 @@ Component.extend('releva-config-check-api-button', 'sw-text-field', {
                 }
             }
         },
-        checkApiState() {
-            this.disabled() ? "" : "unchecked";
-        },
         disabled() {
             return typeof this.compatValue !== "undefined" && this.compatValue.trim() !== ""
         }

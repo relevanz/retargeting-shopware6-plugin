@@ -1,22 +1,19 @@
 {% block sw_text_field %}
     {% block releva_config_check_api_button %}
         <template v-if="salesChannel">
-            <sw-contextual-field v-bind="$attrs" :name="formFieldName">
-                <template #sw-field-input="{identification, error, disabled, size, setFocusClass, removeFocusClass }">
-                    <mt-text-field
-                        v-bind="$attrs"
-                        :model-value="compatValue"
-                        @update:modelValue="handleUpdateModelValue"
-                    />
-                </template>
-                <template class="test" #sw-contextual-field-suffix="{ disabled }">
+            <mt-text-field
+                v-bind="$attrs"
+                :model-value="compatValue"
+                @update:modelValue="handleUpdateModelValue"
+            >
+                <template #suffix>
                     <span @click="changeMode(disabled)" class="releva-config-check-api-button-button">
                         <span v-if="buttonText" class="releva-config-check-api-button-button-text">
                             <sw-icon v-if="buttonIcon" class="releva-config-check-api-button-button-icon" :color="buttonIcon.color" :name="buttonIcon.name" :small="true"></sw-icon>
                         </span>
                     </span>
                 </template>
-            </sw-contextual-field>
+            </mt-text-field>
         </template>
         <template v-else>
             {{ scopeMessage }}
