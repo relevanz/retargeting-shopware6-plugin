@@ -3,19 +3,37 @@ import './releva-config-check-api-button.scss';
 
 const { Component, Mixin } = Shopware;
 
-Component.extend('releva-config-check-api-button', 'sw-text-field', {
+Component.register('releva-config-check-api-button', {
     template,
-    
+
     inheritAttrs: false,
-    
+
     mixins: [
         Mixin.getByName('releva-notification'),
     ],
-    
+
     inject: [
         'retargetingApiService'
     ],
-    
+
+    props: {
+        modelValue: {
+            type: String,
+            required: false,
+            default: null,
+        },
+        value: {
+            type: String,
+            required: false,
+            default: null,
+        },
+        deprecated: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+    },
+
     data() {
         return {
             checkApiState: "unchecked",
@@ -28,7 +46,7 @@ Component.extend('releva-config-check-api-button', 'sw-text-field', {
                 var current = self;
                 while (typeof current.$parent !== "undefined") {
                     current = current.$parent;
-                    if (typeof current.currentSalesChannelId !=="undefined") {
+                    if (typeof current.currentSalesChannelId !== "undefined") {
                         return current.currentSalesChannelId;
                     }
                 }
@@ -37,35 +55,42 @@ Component.extend('releva-config-check-api-button', 'sw-text-field', {
             scopeMessage: this.$attrs.scopeMessage,
         };
     },
+
     computed: {
+        compatValue: {
+            get() {
+                if (this.value === null || this.value === undefined) {
+                    return this.modelValue;
+                }
+                return this.value;
+            },
+            set(value) {
+                this.$emit('update:value', value);
+                this.$emit('update:modelValue', value);
+            },
+        },
         buttonIcon() {
             if (typeof this.compatValue === "undefined") {
                 return;
             }
-            // icons are in /vendor/shopware/administration/Resources/app/administration/node_modules/@shopware-ag/meteor-icon-kit/icons/regular/
             switch (this.checkApiState) {
-                case "success": {
-                    return {name: "regular-check-circle", color: "green"};
-                }
-                case "error": {
-                    return {name: "regular-exclamation-circle", color: "red"};
-                }
-                case "checking": {
-                    return {name: "regular-sync", color: "gray"};
-                }
-                case "unchecked": {
-                    return {name: "regular-cloud-upload", color: "silver"};
-                }
-                default: {
-                    return {name: "regular-ellipsis-h-s", color: "silver"};
-                }
+                case "success": return { name: "regular-check-circle", color: "green" };
+                case "error": return { name: "regular-exclamation-circle", color: "red" };
+                case "checking": return { name: "regular-sync", color: "gray" };
+                case "unchecked": return { name: "regular-cloud-upload", color: "silver" };
+                default: return { name: "regular-ellipsis-h-s", color: "silver" };
             }
         },
         disabled() {
-            return typeof this.compatValue !== "undefined" && this.compatValue.trim() !== ""
-        }
+            return typeof this.compatValue !== "undefined" && this.compatValue.trim() !== "";
+        },
     },
+
     methods: {
+        handleUpdateModelValue(value) {
+            this.$emit('update:modelValue', value);
+            this.$emit('update:value', value);
+        },
         changeMode(disabled) {
             if (disabled || (typeof this.compatValue !== "undefined" ? this.compatValue.trim() : "") === "") {
                 return;
@@ -77,7 +102,7 @@ Component.extend('releva-config-check-api-button', 'sw-text-field', {
                 salesChannel: function(current) {
                     while (typeof current.$parent !== "undefined") {
                         current = current.$parent;
-                        if (typeof current.currentSalesChannelId !=="undefined") {
+                        if (typeof current.currentSalesChannelId !== "undefined") {
                             return current.currentSalesChannelId;
                         }
                     }
@@ -92,6 +117,6 @@ Component.extend('releva-config-check-api-button', 'sw-text-field', {
                 self.checkApiState = "unchecked";
                 self.handleAjaxErrors(data);
             });
-        }
-    }
+        },
+    },
 });
