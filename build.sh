@@ -5,6 +5,10 @@ set -e
 if command -v shopware-cli &>/dev/null; then
     echo "Building assets with shopware-cli..."
     shopware-cli extension build .
+    # shopware-cli wipes public/administration/; restore tracked static assets (plugin icon, etc.)
+    git checkout HEAD -- src/Resources/public/administration/static 2>/dev/null || true
+    # shopware-cli writes a stray src/Storefront/ scaffold; drop it
+    rm -rf src/Storefront
 elif docker inspect shopware &>/dev/null 2>&1 && docker exec shopware test -d /var/www/html/custom/plugins/RelevaRetargeting &>/dev/null 2>&1; then
     echo "Building assets from Docker container 'shopware'..."
     DOCKER_PLUGIN_PATH="shopware:/var/www/html/custom/plugins/RelevaRetargeting"
@@ -24,7 +28,7 @@ fi
 
 # Clean folder
 rm -rf RelevaRetargeting RelevaRetargeting.zip
-rsync -a --exclude=nbproject --exclude=.git --exclude=.gitignore --exclude=.gitmodules --exclude=.claude --exclude=.DS_Store --exclude=RelevaRetargeting --exclude=RelevaRetargeting.zip --exclude=.directory ./ ./RelevaRetargeting/
+rsync -a --exclude=nbproject --exclude=.git --exclude=.gitignore --exclude=.gitmodules --exclude=.claude --exclude=.DS_Store --exclude=/src/Storefront --exclude=RelevaRetargeting --exclude=RelevaRetargeting.zip --exclude=.directory ./ ./RelevaRetargeting/
 
 # Remove shopware requires for standalone install
 sed -i '' '/"shopware\/core": "/d' ./RelevaRetargeting/composer.json

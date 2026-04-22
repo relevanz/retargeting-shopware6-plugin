@@ -1,5 +1,6 @@
 /nbproject/
 .DS_Store
+.claude/
 src/Resources/public/administration/.vite/
 src/Resources/public/static/
 src/Storefront/
